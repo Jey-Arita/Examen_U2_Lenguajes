@@ -18,7 +18,7 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        var context = services.GetRequiredService<PartidaContext>();
+        var context = services.GetRequiredService<PartidaDbContext>();
         var userManager = services.GetRequiredService<UserManager<UserEntity>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 

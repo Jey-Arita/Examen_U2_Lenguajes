@@ -15,7 +15,7 @@ namespace PartidasContables.DataBase.Entities
         public bool EstaEliminada { get; set; } = false;
 
         [Required]
-        public Guid IdUsuario { get; set; }
+        public string IdUsuario { get; set; }
         [ForeignKey(nameof(IdUsuario))]
         public virtual UserEntity Usuario { get; set; }
 

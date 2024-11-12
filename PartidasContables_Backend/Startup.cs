@@ -24,14 +24,21 @@ namespace PartidasContables
             services.AddSwaggerGen();
 
             //Add Custom services
-            services.AddDbContext<PartidaContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Configuración del contexto de Partidas
+            services.AddDbContext<PartidaDbContext>(options => 
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Configuración del contexto de logs
+            services.AddDbContext<LogsDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("LogsConnection")));
 
 
             // Add Identity
             services.AddIdentity<UserEntity, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
-            }).AddEntityFrameworkStores<PartidaContext>()
+            }).AddEntityFrameworkStores<PartidaDbContext>()
               .AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>

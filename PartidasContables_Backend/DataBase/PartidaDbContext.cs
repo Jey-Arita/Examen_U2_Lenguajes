@@ -5,12 +5,11 @@ using PartidasContables.DataBase.Entities;
 
 namespace PartidasContables.DataBase
 {
-    public class PartidaContext : IdentityDbContext<UserEntity>
+    public class PartidaDbContext : IdentityDbContext<UserEntity>
     {
-        public PartidaContext(DbContextOptions options)
-                : base(options)
+        public PartidaDbContext(DbContextOptions<PartidaDbContext> options)
+    : base(options)
         {
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,6 +45,5 @@ namespace PartidasContables.DataBase
         public DbSet<PartidaEntity> Partidas { get; set; }
         public DbSet<DetallePartidaEntity> DetallesPartida { get; set; }
         public DbSet<SaldoEntity> Saldos { get; set; }
-        public DbSet<UserEntity> Usuarios { get; set; }
     }
 }
