@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PartidasContables.Migrations.LogDb
 {
     /// <inheritdoc />
-    public partial class addNames : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,18 +20,18 @@ namespace PartidasContables.Migrations.LogDb
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    TipoCuenta = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SaldoInicial = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IdCuentaPadre = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PermiteMovimiento = table.Column<bool>(type: "bit", nullable: false)
+                    descripcion = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    tipo_cuenta = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    saldo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    id_cuenta_padre = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    permite_movimiento = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_catalogo_cuentas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_catalogo_cuentas_catalogo_cuentas_IdCuentaPadre",
-                        column: x => x.IdCuentaPadre,
+                        name: "FK_catalogo_cuentas_catalogo_cuentas_id_cuenta_padre",
+                        column: x => x.id_cuenta_padre,
                         principalSchema: "dbo",
                         principalTable: "catalogo_cuentas",
                         principalColumn: "id",
@@ -73,17 +73,17 @@ namespace PartidasContables.Migrations.LogDb
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    EstaEliminada = table.Column<bool>(type: "bit", nullable: false),
-                    IdUsuario = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    descripcion = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    desactivada = table.Column<bool>(type: "bit", nullable: false),
+                    id_usuario = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_partidas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_partidas_UserEntity_IdUsuario",
-                        column: x => x.IdUsuario,
+                        name: "FK_partidas_UserEntity_id_usuario",
+                        column: x => x.id_usuario,
                         principalTable: "UserEntity",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -95,24 +95,24 @@ namespace PartidasContables.Migrations.LogDb
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdPartida = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdCatalogoCuenta = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TipoOperacion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    id_partida = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    id_catalogo_cuenta = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    descripcion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_detalle_partidas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_detalle_partidas_catalogo_cuentas_IdCatalogoCuenta",
-                        column: x => x.IdCatalogoCuenta,
+                        name: "FK_detalle_partidas_catalogo_cuentas_id_catalogo_cuenta",
+                        column: x => x.id_catalogo_cuenta,
                         principalSchema: "dbo",
                         principalTable: "catalogo_cuentas",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_detalle_partidas_partidas_IdPartida",
-                        column: x => x.IdPartida,
+                        name: "FK_detalle_partidas_partidas_id_partida",
+                        column: x => x.id_partida,
                         principalSchema: "dbo",
                         principalTable: "partidas",
                         principalColumn: "id",
@@ -125,17 +125,17 @@ namespace PartidasContables.Migrations.LogDb
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IdUsuario = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Accion = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    IdPartida = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    id_usuario = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    accion = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    id_partida = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_logs", x => x.id);
                     table.ForeignKey(
-                        name: "FK_logs_partidas_IdPartida",
-                        column: x => x.IdPartida,
+                        name: "FK_logs_partidas_id_partida",
+                        column: x => x.id_partida,
                         principalSchema: "dbo",
                         principalTable: "partidas",
                         principalColumn: "id",
@@ -143,34 +143,34 @@ namespace PartidasContables.Migrations.LogDb
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_catalogo_cuentas_IdCuentaPadre",
+                name: "IX_catalogo_cuentas_id_cuenta_padre",
                 schema: "dbo",
                 table: "catalogo_cuentas",
-                column: "IdCuentaPadre");
+                column: "id_cuenta_padre");
 
             migrationBuilder.CreateIndex(
-                name: "IX_detalle_partidas_IdCatalogoCuenta",
+                name: "IX_detalle_partidas_id_catalogo_cuenta",
                 schema: "dbo",
                 table: "detalle_partidas",
-                column: "IdCatalogoCuenta");
+                column: "id_catalogo_cuenta");
 
             migrationBuilder.CreateIndex(
-                name: "IX_detalle_partidas_IdPartida",
+                name: "IX_detalle_partidas_id_partida",
                 schema: "dbo",
                 table: "detalle_partidas",
-                column: "IdPartida");
+                column: "id_partida");
 
             migrationBuilder.CreateIndex(
-                name: "IX_logs_IdPartida",
+                name: "IX_logs_id_partida",
                 schema: "dbo",
                 table: "logs",
-                column: "IdPartida");
+                column: "id_partida");
 
             migrationBuilder.CreateIndex(
-                name: "IX_partidas_IdUsuario",
+                name: "IX_partidas_id_usuario",
                 schema: "dbo",
                 table: "partidas",
-                column: "IdUsuario");
+                column: "id_usuario");
         }
 
         /// <inheritdoc />

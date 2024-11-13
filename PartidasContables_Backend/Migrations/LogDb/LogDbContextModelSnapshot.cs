@@ -29,23 +29,28 @@ namespace PartidasContables.Migrations.LogDb
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("IdCuentaPadre")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Nombre")
+                    b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("descripcion");
+
+                    b.Property<Guid>("IdCuentaPadre")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id_cuenta_padre");
 
                     b.Property<bool>("PermiteMovimiento")
-                        .HasColumnType("bit");
+                        .HasColumnType("bit")
+                        .HasColumnName("permite_movimiento");
 
-                    b.Property<decimal>("SaldoInicial")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("Saldo")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("saldo");
 
                     b.Property<string>("TipoCuenta")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("tipo_cuenta");
 
                     b.HasKey("Id");
 
@@ -61,18 +66,22 @@ namespace PartidasContables.Migrations.LogDb
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("descripcion");
+
                     b.Property<Guid>("IdCatalogoCuenta")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id_catalogo_cuenta");
 
                     b.Property<Guid>("IdPartida")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id_partida");
 
                     b.Property<decimal>("Monto")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("TipoOperacion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("monto");
 
                     b.HasKey("Id");
 
@@ -93,17 +102,22 @@ namespace PartidasContables.Migrations.LogDb
                     b.Property<string>("Accion")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("accion");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("fecha");
 
                     b.Property<Guid?>("IdPartida")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id_partida");
 
                     b.Property<string>("IdUsuario")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("id_usuario");
 
                     b.HasKey("Id");
 
@@ -119,19 +133,24 @@ namespace PartidasContables.Migrations.LogDb
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id");
 
-                    b.Property<string>("Descripcion")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<bool>("Desactivada")
+                        .HasColumnType("bit")
+                        .HasColumnName("desactivada");
 
-                    b.Property<bool>("EstaEliminada")
-                        .HasColumnType("bit");
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("descripcion");
 
                     b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("fecha");
 
                     b.Property<string>("IdUsuario")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("id_usuario");
 
                     b.HasKey("Id");
 

@@ -8,21 +8,26 @@ namespace PartidasContables.DataBase.Entities
     {
         [Required]
         [MaxLength(100)]
-        public string Nombre { get; set; }
+        [Column("descripcion")]
+        public string Descripcion { get; set; }
 
         [Required]
-        public string TipoCuenta { get; set; } // Ej: "Activo", "Pasivo"
+        [Column("tipo_cuenta")]
+        public string TipoCuenta { get; set; } // Ej: "Activo", "Pasivo", Capital (Debe/Haber)
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal SaldoInicial { get; set; }
+        [Column("saldo", TypeName = "decimal(18,2)")]
+        public decimal Saldo { get; set; }
 
-        public Guid IdCuentaPadre { get; set; }
+        [Column("id_cuenta_padre")] // Corregido
+        public Guid IdCuentaPadre { get; set; } // Nullable para evitar problemas de eliminación en cascada
 
         [ForeignKey(nameof(IdCuentaPadre))]
         public virtual CatalogoCuentaEntity CuentaPadre { get; set; }
 
         public ICollection<CatalogoCuentaEntity> CuentasHijas { get; set; } = new List<CatalogoCuentaEntity>();
 
+        [Column("permite_movimiento")]
         public bool PermiteMovimiento { get; set; }
     }
+
 }

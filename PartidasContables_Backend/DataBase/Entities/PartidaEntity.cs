@@ -6,22 +6,26 @@ namespace PartidasContables.DataBase.Entities
     [Table("partidas", Schema = "dbo")]
     public class PartidaEntity : BaseEntity
     {
+        [Column("fecha")]
         [Required]
         public DateTime Fecha { get; set; }
 
+        [Column("descripcion")]
         [MaxLength(500)]
-        public string Descripcion { get; set; }
+        [Required] // Solo si la descripción es obligatoria
+        public string Descripcion { get; set; } // Descripción de la partida o sinopsis
 
-        // Estado de la partida: si está activa o eliminada
-        public bool EstaEliminada { get; set; } = false;
+        [Column("desactivada")]
+        public bool Desactivada { get; set; } = false; // Estado de la partida
 
+        [Column("id_usuario")]
         [Required]
         public string IdUsuario { get; set; }
+
         [ForeignKey(nameof(IdUsuario))]
         public virtual UserEntity Usuario { get; set; }
 
-        // Relacion con DetallePartidaEntity
+        // Relación con DetallePartidaEntity
         public ICollection<DetallePartidaEntity> Detalles { get; set; } = new List<DetallePartidaEntity>();
     }
-
 }
