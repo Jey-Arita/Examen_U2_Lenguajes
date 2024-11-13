@@ -1,66 +1,106 @@
-import { useState } from 'react'
+import { useFormik } from "formik";
+import { FaArrowRight } from "react-icons/fa";
+import { loginInitValues, loginValidationSchema } from "../forms";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store";
+import { Loading } from "../../../shared/components/Loading";
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+export const LoginPage = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const login = useAuthStore((state) => state.login);
+  const error = useAuthStore((state) => state.error);
+  const message = useAuthStore((state) => state.message);
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Aquí iría la lógica de autenticación
-    console.log('Login attempt', { email, password })
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/home");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const formik = useFormik({
+    initialValues: loginInitValues,
+    validationSchema: loginValidationSchema,
+    validateOnChange: true,
+    onSubmit: async (formValues) => {
+      setLoading(true);
+      await login(formValues);
+      setLoading(false);
+    },
+  });
+
+  if (loading) {
+    return <Loading />;
   }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80')"
-      }}
-    >
-      <div className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-xl p-6 rounded-lg">
-        <div className="space-y-1 text-center">
-          <h2 className="text-2xl font-bold">Iniciar sesión</h2>
-          <p>Ingresa tus credenciales para acceder</p>
-        </div>
-        <div className="my-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Correo electrónico
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="tu@ejemplo.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Contraseña
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+    <div className="p-10 xs:p-0 mx-auto md:w-full md:max-w-md my-4">
+      <h1 className="font-bold text-center text-2xl mb-5 text-unah-blue">
+        Iniciar sesión
+      </h1>
+      <div className="bg-white shadow w-full rounded-lg divide-y divide-gray-200">
+        {error && (
+          <span className="p-4 block bg-red-500 text-white text-center rounded-t-lg">
+            {message}
+          </span>
+        )}
+      </div>
+      <div className="bg-white shadow text-sm rounded-lg divide-y divide-gray-200">
+        <form onSubmit={formik.handleSubmit} className="px-5 py-7">
+          <div className="mb-4">
+            <label
+              className="font-semibold text-sm text-gray-600 pb-1 block"
+              htmlFor="email"
             >
-              Iniciar sesión
-            </button>
-          </form>
-        </div>
+              Correo electrónico
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              className="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+            />
+            {formik.touched.email && formik.errors.email && (
+              <div className="text-red-500 text-xs mb-2">
+                {formik.errors.email}
+              </div>
+            )}
+          </div>
+          <div>
+            <label
+              className="font-semibold text-sm text-gray-600 pb-1 block"
+              htmlFor="password"
+            >
+              Contraseña
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              className="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full"
+            />
+            {formik.touched.password && formik.errors.password && (
+              <div className="text-red-500 text-xs mb-2">
+                {formik.errors.password}
+              </div>
+            )}
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="transition duration-200 bg-unah-blue hover:bg-unah-blueLight focus:bg-unah-blueLight focus:shadow-sm focus:ring-4 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
+          >
+            <span className="inline-block mr-2">Ingresar</span>
+            <FaArrowRight className="w-4 h-4 inline-block" />
+          </button>
+        </form>
       </div>
     </div>
-  )
-}
+  );
+};
