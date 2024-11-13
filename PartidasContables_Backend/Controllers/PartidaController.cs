@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PartidasContables.Constants;
 using PartidasContables.DataBase.Entities;
 using PartidasContables.Dtos.Common;
 using PartidasContables.Dtos.Partida;
@@ -8,8 +7,9 @@ using PartidasContables.Services.Interface;
 
 namespace PartidasContables.Controllers
 {
-    [Route("api/partida")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [ApiController]
+    [Route("api/partida")]
     public class PartidaController : ControllerBase
     {
         private readonly IPartidaService _partidaService;

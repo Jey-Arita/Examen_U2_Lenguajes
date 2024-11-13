@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{PATH}}/partida
+  url: {{PATH}}partida
   body: json
   auth: bearer
 }
@@ -16,20 +16,17 @@ auth:bearer {
 
 body:json {
   {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "fecha": "2024-11-13T17:08:36.409Z",
     "descripcion": "Partida contable de ejemplo",
     "desactivada": false,
     "idUsuario": "3dc8ab1f-33be-49b6-b6d3-4803ce06cb36",
     "detalles": [
       {
-        "idPartida": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-        "idCatalogoCuenta": "1A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C70",
+        "idCatalogoCuenta": "1A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6F",
         "descripcion": "Detalle de la partida contable 1",
         "monto": 1500
       },
       {
-        "idPartida": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "idCatalogoCuenta": "1A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C74",
         "descripcion": "Detalle de la partida contable 2",
         "monto": -1500

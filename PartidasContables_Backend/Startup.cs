@@ -8,6 +8,7 @@ using PartidasContables.Services.Interface;
 using PartidasContables.Services;
 using System.Text;
 using PartidasContables.Helpers;
+using System.Text.Json.Serialization;
 
 namespace PartidasContables
 {
@@ -25,6 +26,14 @@ namespace PartidasContables
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            //Evitamos la recursividad en los Json
+            services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            });
+
 
             //Add Custom services
             services.AddTransient<IAuthService, AuthService>();

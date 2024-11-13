@@ -38,28 +38,41 @@ namespace PartidasContables.Services
                 // Mapeo del DTO a la entidad PartidaEntity
                 var partidaEntity = _mapper.Map<PartidaEntity>(partidaDto);
 
-                // Mapeamos cada DetallePartidaDto a DetallePartidaEntity
                 foreach (var detalleDto in partidaDto.Detalles)
                 {
-                    // Buscamos la cuenta en el catálogo por su ID
+                    // Buscar la cuenta en el catálogo por su ID
                     var cuenta = await _context.CatalogoCuentas.FindAsync(detalleDto.IdCatalogoCuenta);
                     if (cuenta == null)
                     {
                         throw new Exception($"Cuenta con ID {detalleDto.IdCatalogoCuenta} no encontrada.");
                     }
 
-                    // Mapeamos DetallePartidaDto a DetallePartidaEntity y le asignamos la cuenta relacionada
+                    // Mapeamos el detalle y le asignamos la cuenta relacionada
                     var detalleEntity = _mapper.Map<DetallePartidaEntity>(detalleDto);
-                    detalleEntity.CatalogoCuenta = cuenta;  // Asignamos la cuenta encontrada
+                    detalleEntity.CatalogoCuenta = cuenta;
 
-                    // Asociamos el detalle a la partida
+                    // Ajuste de saldo basado en el tipo de cuenta
+                    if (cuenta.TipoCuenta == "Activo")
+                    {
+                        cuenta.Saldo += detalleDto.Monto;  // Las cuentas Activas incrementan el saldo
+                    }
+                    else if (cuenta.TipoCuenta == "Pasivo")
+                    {
+                        cuenta.Saldo -= detalleDto.Monto;  // Las cuentas Pasivas disminuyen el saldo
+                    }
+                    else
+                    {
+                        throw new Exception($"Tipo de cuenta no válido para la cuenta con ID {detalleDto.IdCatalogoCuenta}.");
+                    }
+
+                    // Asociar el detalle a la partida
                     partidaEntity.Detalles.Add(detalleEntity);
                 }
 
-                // Aquí puedes agregar la lógica para modificar el saldo de las cuentas asociadas si es necesario
-
-                // Agregamos la partida a la base de datos
+                // Agregar la partida a la base de datos
                 await _context.Partidas.AddAsync(partidaEntity);
+
+                // Guardar los cambios, incluyendo los ajustes de saldo
                 await _context.SaveChangesAsync();
 
                 return new ResponseDto<PartidaEntity>
@@ -81,6 +94,7 @@ namespace PartidasContables.Services
                 };
             }
         }
+
     }
 }
 
