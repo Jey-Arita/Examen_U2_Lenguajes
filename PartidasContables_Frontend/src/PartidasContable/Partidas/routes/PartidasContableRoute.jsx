@@ -7,7 +7,7 @@ export const PartidasContableRouter = () => {
         <div className="px-6 py-8">
           <div className="container flex justify-between mx-auto">
             <Routes>
-                <Route path="/inicio" element={<Partidas />} />
+                <Route path="/*" element={<Partidas />} />
             </Routes>
           </div>
         </div>

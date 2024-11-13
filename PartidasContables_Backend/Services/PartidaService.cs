@@ -95,6 +95,27 @@ namespace PartidasContables.Services
             }
         }
 
+<<<<<<< HEAD
     }
 }
+=======
+
+        public async Task<ResponseDto<List<PartidaDto>>> ListPartidaAsync(PartidaDto partidaDto)
+        {
+            var partidaEntity = await _context.Partidas.Where(x => x.Fecha <= DateTime.Now).ToListAsync(); ;
+
+            var librosDtos = _mapper.Map<List<PartidaDto>>(partidaEntity);
+
+            return new ResponseDto<List<PartidaDto>>
+            {
+                StatusCode = 200,
+                Status = true,
+                Message = "Lista de partidas obtenida correctamente.",
+                Data = librosDtos
+            };
+        }
+    }
+ }
+
+>>>>>>> a66aad80391c3f10b357f7a1b477a539972e414d
 
