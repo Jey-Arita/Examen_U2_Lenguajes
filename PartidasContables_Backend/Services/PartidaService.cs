@@ -2,11 +2,13 @@
 using PartidasContables.DataBase.Entities;
 using PartidasContables.DataBase;
 using PartidasContables.Dtos.Partida;
+using PartidasContables.Dtos.Common;
 using Microsoft.EntityFrameworkCore;
+using PartidasContables.Services.Interface;
 
 namespace PartidasContables.Services
 {
-    public class PartidaService
+    public class PartidaService : IPartidaService
     {
         private readonly PartidaDbContext _context;
         private readonly IMapper _mapper;
@@ -17,51 +19,68 @@ namespace PartidasContables.Services
             _mapper = mapper;
         }
 
-        public async Task CrearPartidaAsync(PartidaDto partidaDto)
+        public async Task<ResponseDto<PartidaEntity>> CrearPartidaAsync(PartidaDto partidaDto)
         {
-            // Mapeo de PartidaDto a PartidaEntity
-            var partidaEntity = _mapper.Map<PartidaEntity>(partidaDto);
-
-            // Guardar la partida para generar el Id
-            _context.Partidas.Add(partidaEntity);
-            await _context.SaveChangesAsync();
-
-            // Asignación de IdPartida en cada detalle y ajuste de cuentas
-            foreach (var detalleDto in partidaDto.Detalles)
+            // Validación: La partida debe tener al menos un detalle
+            if (partidaDto.Detalles == null || !partidaDto.Detalles.Any())
             {
-                detalleDto.IdPartida = partidaEntity.Id; // Asigna el IdPartida generado
-
-                // Obtener la entidad de cuenta del catálogo relacionada
-                var cuentaCatalogo = await _context.CatalogoCuentas
-                    .FirstOrDefaultAsync(c => c.Id == detalleDto.IdCatalogoCuenta);
-
-                if (cuentaCatalogo == null)
+                return new ResponseDto<PartidaEntity>
                 {
-                    throw new Exception($"La cuenta con Id {detalleDto.IdCatalogoCuenta} no existe en el catálogo.");
-                }
-
-                // Ajustar el saldo en función de si la cuenta permite movimiento y su tipo de operación
-                if (cuentaCatalogo.PermiteMovimiento)
-                {
-                    // Suponiendo que "TipoCuenta" indica "Debe" o "Haber" para el ajuste
-                    if (cuentaCatalogo.TipoCuenta == "Debe")
-                    {
-                        cuentaCatalogo.Saldo += detalleDto.Monto; // Aumentar en cuentas de Debe
-                    }
-                    else if (cuentaCatalogo.TipoCuenta == "Haber")
-                    {
-                        cuentaCatalogo.Saldo -= detalleDto.Monto; // Disminuir en cuentas de Haber
-                    }
-                }
+                    StatusCode = 400,
+                    Status = false,
+                    Message = "La partida debe tener al menos un detalle.",
+                    Data = null,
+                };
             }
 
-            // Mapeo de DetallePartidaDto a DetallePartidaEntity y guardado en base de datos
-            var detalles = _mapper.Map<List<DetallePartidaEntity>>(partidaDto.Detalles);
-            _context.DetallesPartida.AddRange(detalles);
+            try
+            {
+                // Mapeo del DTO a la entidad PartidaEntity
+                var partidaEntity = _mapper.Map<PartidaEntity>(partidaDto);
 
-            // Guardar los cambios en la base de datos, incluyendo el ajuste en las cuentas del catálogo
-            await _context.SaveChangesAsync();
+                // Mapeamos cada DetallePartidaDto a DetallePartidaEntity
+                foreach (var detalleDto in partidaDto.Detalles)
+                {
+                    // Buscamos la cuenta en el catálogo por su ID
+                    var cuenta = await _context.CatalogoCuentas.FindAsync(detalleDto.IdCatalogoCuenta);
+                    if (cuenta == null)
+                    {
+                        throw new Exception($"Cuenta con ID {detalleDto.IdCatalogoCuenta} no encontrada.");
+                    }
+
+                    // Mapeamos DetallePartidaDto a DetallePartidaEntity y le asignamos la cuenta relacionada
+                    var detalleEntity = _mapper.Map<DetallePartidaEntity>(detalleDto);
+                    detalleEntity.CatalogoCuenta = cuenta;  // Asignamos la cuenta encontrada
+
+                    // Asociamos el detalle a la partida
+                    partidaEntity.Detalles.Add(detalleEntity);
+                }
+
+                // Aquí puedes agregar la lógica para modificar el saldo de las cuentas asociadas si es necesario
+
+                // Agregamos la partida a la base de datos
+                await _context.Partidas.AddAsync(partidaEntity);
+                await _context.SaveChangesAsync();
+
+                return new ResponseDto<PartidaEntity>
+                {
+                    StatusCode = 201,
+                    Status = true,
+                    Message = "Registro creado correctamente.",
+                    Data = partidaEntity,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<PartidaEntity>
+                {
+                    StatusCode = 500,
+                    Status = false,
+                    Message = $"Error al crear la partida: {ex.Message}",
+                    Data = null,
+                };
+            }
         }
     }
-
 }
+

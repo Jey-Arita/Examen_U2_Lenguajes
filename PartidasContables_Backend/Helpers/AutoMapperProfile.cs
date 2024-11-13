@@ -14,10 +14,21 @@ namespace PartidasContables.Helpers
 
         private void MapForPartidas()
         {
-            CreateMap<PartidaDto, PartidaEntity>()
-                .ForMember(dest => dest.Detalles, opt => opt.Ignore()); // Ignoramos Detalles por ahora
+            // Mapeo de PartidaContableEntity a PartidaDto
+            CreateMap<PartidaEntity, PartidaDto>()
+                .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.Detalles));
 
-            CreateMap<DetallePartidaDto, DetallePartidaEntity>();
+            // Mapeo de DetallePartidaEntity a DetallePartidaDto
+            CreateMap<DetallePartidaEntity, DetallePartidaDto>()
+                .ForMember(dest => dest.IdCatalogoCuenta, opt => opt.MapFrom(src => src.CatalogoCuenta.Id)); // Aquí asumes que el detalle tiene un 'CatalogoCuenta'
+
+            // Mapeo de PartidaDto a PartidaContableEntity
+            CreateMap<PartidaDto, PartidaEntity>()
+                .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.Detalles));
+
+            // Mapeo de DetallePartidaDto a DetallePartidaEntity
+            CreateMap<DetallePartidaDto, DetallePartidaEntity>()
+                .ForMember(dest => dest.CatalogoCuenta, opt => opt.MapFrom(src => new CatalogoCuentaEntity { Id = src.IdCatalogoCuenta }));
         }
     }
 }
