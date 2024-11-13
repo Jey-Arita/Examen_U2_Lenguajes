@@ -21,6 +21,7 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<PartidaDbContext>();
         var userManager = services.GetRequiredService<UserManager<UserEntity>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await PartidaDbSeeder.LoadDataAsync(context, loggerFactory, userManager, roleManager);
 
     }
     catch (Exception e)

@@ -7,6 +7,10 @@ namespace PartidasContables.DataBase.Entities
     public class CatalogoCuentaEntity : BaseEntity
     {
         [Required]
+        [Column("numero_cuenta")]
+        public string NumeroCuenta { get; set; }
+
+        [Required]
         [MaxLength(100)]
         [Column("descripcion")]
         public string Descripcion { get; set; }

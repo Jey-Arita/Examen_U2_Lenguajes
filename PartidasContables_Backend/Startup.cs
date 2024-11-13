@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PartidasContables.DataBase;
 using PartidasContables.DataBase.Entities;
+using PartidasContables.Services.Interface;
+using PartidasContables.Services;
 using System.Text;
 
 namespace PartidasContables
@@ -24,6 +26,8 @@ namespace PartidasContables
             services.AddSwaggerGen();
 
             //Add Custom services
+            services.AddTransient<IAuthService, AuthService>();
+
 
             // Configuración del contexto de Partidas
             services.AddDbContext<PartidaDbContext>(options => 
