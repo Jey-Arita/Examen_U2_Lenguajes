@@ -46,7 +46,7 @@ namespace PartidasContables.DataBase
                     {
                         FirstName = "Administrador",
                         LastName = "Blog",
-                        Email = "l",
+                        Email = "admin@blogunah.edu",
                         UserName = "admin@blogunah.edu",
                     };
 

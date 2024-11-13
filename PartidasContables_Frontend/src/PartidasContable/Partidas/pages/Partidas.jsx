@@ -39,6 +39,7 @@ export const Partidas = () => {
   });
 
   const [editingId, setEditingId] = useState(null);
+  const [user, setUser] = useState("Nombre de Usuario");
 
   const addEntry = () => {
     setEntries([...entries, { ...newEntry, id: Date.now() }]);
@@ -64,7 +65,15 @@ export const Partidas = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-4">Tabla de Partidas Contables</h1>
+      <h1 className="text-2xl font-bold mb-4">Tabla de Catalogo de Cuenta</h1>
+
+      {/* Sección de Encabezado con Fecha y Usuario */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-lg font-semibold">
+          Fecha: {new Date().toLocaleDateString("es-HN")}
+        </div>
+        <div className="text-lg font-semibold">Usuario: {user}</div>
+      </div>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
         <input
