@@ -23,7 +23,7 @@ namespace PartidasContables.DataBase.Entities
         public decimal Saldo { get; set; }
 
         [Column("id_cuenta_padre")] // Corregido
-        public Guid IdCuentaPadre { get; set; } // Nullable para evitar problemas de eliminación en cascada
+        public Guid? IdCuentaPadre { get; set; } // Nullable para evitar problemas de eliminación en cascada
 
         [ForeignKey(nameof(IdCuentaPadre))]
         public virtual CatalogoCuentaEntity CuentaPadre { get; set; }

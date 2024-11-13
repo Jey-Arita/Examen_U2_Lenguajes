@@ -7,6 +7,7 @@ using PartidasContables.DataBase.Entities;
 using PartidasContables.Services.Interface;
 using PartidasContables.Services;
 using System.Text;
+using PartidasContables.Helpers;
 
 namespace PartidasContables
 {
@@ -67,7 +68,7 @@ namespace PartidasContables
 
 
             // Configurar AutoMapper
-            //services.AddAutoMapper(typeof(AutoMapperProfile));
+            services.AddAutoMapper(typeof(AutoMapperProfile));
 
             services.AddCors(opt =>
             {
