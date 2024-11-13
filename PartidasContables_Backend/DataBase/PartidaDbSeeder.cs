@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PartidasContables.Constants;
 using PartidasContables.DataBase.Entities;
 
@@ -17,6 +18,7 @@ namespace PartidasContables.DataBase
             try
             {
                 await LoadRolesAndUsersAsync(userManager, roleManager, loggerFactory);
+                await LoadCuentasAsync(loggerFactory, context);
             }
             catch (Exception e)
             {
@@ -59,9 +61,29 @@ namespace PartidasContables.DataBase
                 var logger = loggerFactory.CreateLogger<PartidaDbContext>();
                 logger.LogError(e.Message);
             }
-
-
         }
+
+        public static async Task LoadCuentasAsync(ILoggerFactory loggerFactory, PartidaDbContext _context)
+        {
+            try
+            {
+                var jsonfilePath = "SeedData/catalogocuentas.json";  // Ruta del archivo JSON con los datos de las cuentas
+                var jsonContent = await File.ReadAllTextAsync(jsonfilePath);  // Leemos el archivo JSON
+                var cuentas = JsonConvert.DeserializeObject<List<CatalogoCuentaEntity>>(jsonContent);  // Deserializamos el JSON en una lista de cuentas
+
+                if (!await _context.CatalogoCuentas.AnyAsync())  // Verificamos si ya hay datos en la tabla de cuentas
+                {
+                    _context.CatalogoCuentas.AddRange(cuentas);  // Agregamos las cuentas a la tabla
+                    await _context.SaveChangesAsync();  // Guardamos los cambios en la base de datos
+                }
+            }
+            catch (Exception e)
+            {
+                var logger = loggerFactory.CreateLogger<PartidaDbContext>();
+                logger.LogError(e, "Error al ejecutar el Seed de cuentas.");
+            }
+        }
+
 
     }
 }

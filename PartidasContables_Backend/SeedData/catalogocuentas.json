@@ -1,0 +1,101 @@
+[
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d",
+    "NumeroCuenta": "1",
+    "Descripcion": "ACTIVO",
+    "Saldo": 1000.00,
+    "TipoCuenta": "Activo",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": null
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6e",
+    "NumeroCuenta": "1.1",
+    "Descripcion": "CAJA Y BANCOS",
+    "Saldo": 2500.00,
+    "TipoCuenta": "Activo",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6f",
+    "NumeroCuenta": "1.1.1",
+    "Descripcion": "EFECTIVO",
+    "Saldo": 3500.00,
+    "TipoCuenta": "Activo",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6e"
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c70",
+    "NumeroCuenta": "1.1.2",
+    "Descripcion": "BANCOS",
+    "Saldo": 5000.00,
+    "TipoCuenta": "Activo",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6e"
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c71",
+    "NumeroCuenta": "2",
+    "Descripcion": "PASIVO",
+    "Saldo": 10000.00,
+    "TipoCuenta": "Pasivo",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": null
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c72",
+    "NumeroCuenta": "2.1",
+    "Descripcion": "CUENTAS POR PAGAR",
+    "Saldo": 3500.00,
+    "TipoCuenta": "Pasivo",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c71"
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c73",
+    "NumeroCuenta": "2.1.1",
+    "Descripcion": "JOSE",
+    "Saldo": 2000.00,
+    "TipoCuenta": "Pasivo",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c72"
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c74",
+    "NumeroCuenta": "2.1.2",
+    "Descripcion": "JUAN GABRIEL",
+    "Saldo": 3000.00,
+    "TipoCuenta": "Pasivo",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c72"
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c75",
+    "NumeroCuenta": "3",
+    "Descripcion": "CAPITAL",
+    "Saldo": 7500.00,
+    "TipoCuenta": "Capital",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": null
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c76",
+    "NumeroCuenta": "3.1",
+    "Descripcion": "CAPITAL SOCIAL",
+    "Saldo": 10000.00,
+    "TipoCuenta": "Capital",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c75"
+  },
+  {
+    "Id": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c77",
+    "NumeroCuenta": "3.2",
+    "Descripcion": "CIERRE DEL PERIODO",
+    "Saldo": 9500.00,
+    "TipoCuenta": "Capital",
+    "PermiteMovimiento": true,
+    "IdCuentaPadre": "1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c75"
+  }
+]
