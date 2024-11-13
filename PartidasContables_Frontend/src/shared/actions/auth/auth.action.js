@@ -1,5 +1,4 @@
-import { partidaApi } from "../../../Config/api";
-
+import { partidaApi } from '../../../Config/api';
 
 export const loginAsync = async (form) => {
     try {
