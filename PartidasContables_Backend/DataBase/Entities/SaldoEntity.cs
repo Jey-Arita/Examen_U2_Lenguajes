@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PartidasContables.DataBase.Entities
 {
-    public class SaldoEntity : BaseEntity
+    [Table("saldos", Schema = "dbo")]
+    public class SaldoEntity
     {
         [Required]
         public int Año { get; set; }

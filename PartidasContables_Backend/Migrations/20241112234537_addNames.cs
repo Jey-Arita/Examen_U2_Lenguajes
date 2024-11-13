@@ -6,17 +6,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PartidasContables.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class addNames : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
+                name: "dbo");
+
+            migrationBuilder.EnsureSchema(
                 name: "security");
 
             migrationBuilder.CreateTable(
-                name: "CatalogoCuentas",
-                schema: "security",
+                name: "catalogo_cuentas",
+                schema: "dbo",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -28,14 +31,13 @@ namespace PartidasContables.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CatalogoCuentas", x => x.id);
+                    table.PrimaryKey("PK_catalogo_cuentas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_CatalogoCuentas_CatalogoCuentas_IdCuentaPadre",
+                        name: "FK_catalogo_cuentas_catalogo_cuentas_IdCuentaPadre",
                         column: x => x.IdCuentaPadre,
-                        principalSchema: "security",
-                        principalTable: "CatalogoCuentas",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalSchema: "dbo",
+                        principalTable: "catalogo_cuentas",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -84,11 +86,10 @@ namespace PartidasContables.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Saldos",
-                schema: "security",
+                name: "saldos",
+                schema: "dbo",
                 columns: table => new
                 {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Año = table.Column<int>(type: "int", nullable: false),
                     Mes = table.Column<int>(type: "int", nullable: false),
                     MontoSaldo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -96,14 +97,14 @@ namespace PartidasContables.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Saldos", x => x.id);
+                    table.PrimaryKey("PK_saldos", x => new { x.Año, x.Mes, x.MontoSaldo });
                     table.ForeignKey(
-                        name: "FK_Saldos_CatalogoCuentas_IdCatalogoCuenta",
+                        name: "FK_saldos_catalogo_cuentas_IdCatalogoCuenta",
                         column: x => x.IdCatalogoCuenta,
-                        principalSchema: "security",
-                        principalTable: "CatalogoCuentas",
+                        principalSchema: "dbo",
+                        principalTable: "catalogo_cuentas",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,12 +127,12 @@ namespace PartidasContables.Migrations
                         principalSchema: "security",
                         principalTable: "roles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Partidas",
-                schema: "security",
+                name: "partidas",
+                schema: "dbo",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -142,14 +143,14 @@ namespace PartidasContables.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Partidas", x => x.id);
+                    table.PrimaryKey("PK_partidas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Partidas_users_IdUsuario",
+                        name: "FK_partidas_users_IdUsuario",
                         column: x => x.IdUsuario,
                         principalSchema: "security",
                         principalTable: "users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -172,7 +173,7 @@ namespace PartidasContables.Migrations
                         principalSchema: "security",
                         principalTable: "users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -194,7 +195,7 @@ namespace PartidasContables.Migrations
                         principalSchema: "security",
                         principalTable: "users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -214,14 +215,14 @@ namespace PartidasContables.Migrations
                         principalSchema: "security",
                         principalTable: "roles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_users_roles_users_UserId",
                         column: x => x.UserId,
                         principalSchema: "security",
                         principalTable: "users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -243,12 +244,12 @@ namespace PartidasContables.Migrations
                         principalSchema: "security",
                         principalTable: "users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DetallesPartida",
-                schema: "security",
+                name: "detalle_partidas",
+                schema: "dbo",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -259,45 +260,45 @@ namespace PartidasContables.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DetallesPartida", x => x.id);
+                    table.PrimaryKey("PK_detalle_partidas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_DetallesPartida_CatalogoCuentas_IdCatalogoCuenta",
+                        name: "FK_detalle_partidas_catalogo_cuentas_IdCatalogoCuenta",
                         column: x => x.IdCatalogoCuenta,
-                        principalSchema: "security",
-                        principalTable: "CatalogoCuentas",
+                        principalSchema: "dbo",
+                        principalTable: "catalogo_cuentas",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DetallesPartida_Partidas_IdPartida",
+                        name: "FK_detalle_partidas_partidas_IdPartida",
                         column: x => x.IdPartida,
-                        principalSchema: "security",
-                        principalTable: "Partidas",
+                        principalSchema: "dbo",
+                        principalTable: "partidas",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CatalogoCuentas_IdCuentaPadre",
-                schema: "security",
-                table: "CatalogoCuentas",
+                name: "IX_catalogo_cuentas_IdCuentaPadre",
+                schema: "dbo",
+                table: "catalogo_cuentas",
                 column: "IdCuentaPadre");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetallesPartida_IdCatalogoCuenta",
-                schema: "security",
-                table: "DetallesPartida",
+                name: "IX_detalle_partidas_IdCatalogoCuenta",
+                schema: "dbo",
+                table: "detalle_partidas",
                 column: "IdCatalogoCuenta");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetallesPartida_IdPartida",
-                schema: "security",
-                table: "DetallesPartida",
+                name: "IX_detalle_partidas_IdPartida",
+                schema: "dbo",
+                table: "detalle_partidas",
                 column: "IdPartida");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Partidas_IdUsuario",
-                schema: "security",
-                table: "Partidas",
+                name: "IX_partidas_IdUsuario",
+                schema: "dbo",
+                table: "partidas",
                 column: "IdUsuario");
 
             migrationBuilder.CreateIndex(
@@ -315,9 +316,9 @@ namespace PartidasContables.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Saldos_IdCatalogoCuenta",
-                schema: "security",
-                table: "Saldos",
+                name: "IX_saldos_IdCatalogoCuenta",
+                schema: "dbo",
+                table: "saldos",
                 column: "IdCatalogoCuenta");
 
             migrationBuilder.CreateIndex(
@@ -357,16 +358,16 @@ namespace PartidasContables.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DetallesPartida",
-                schema: "security");
+                name: "detalle_partidas",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "roles_claims",
                 schema: "security");
 
             migrationBuilder.DropTable(
-                name: "Saldos",
-                schema: "security");
+                name: "saldos",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "users_claims",
@@ -385,12 +386,12 @@ namespace PartidasContables.Migrations
                 schema: "security");
 
             migrationBuilder.DropTable(
-                name: "Partidas",
-                schema: "security");
+                name: "partidas",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "CatalogoCuentas",
-                schema: "security");
+                name: "catalogo_cuentas",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "roles",

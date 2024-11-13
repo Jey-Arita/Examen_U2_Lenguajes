@@ -27,10 +27,10 @@ namespace PartidasContables
 
             // Configuración del contexto de Partidas
             services.AddDbContext<PartidaDbContext>(options => 
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(Configuration.GetConnectionString("PartidasConnection")));
 
             // Configuración del contexto de logs
-            services.AddDbContext<LogsDbContext>(options =>
+            services.AddDbContext<LogDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("LogsConnection")));
 
 

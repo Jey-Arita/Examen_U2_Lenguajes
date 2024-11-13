@@ -3,12 +3,11 @@ using PartidasContables.DataBase.Entities;
 
 namespace PartidasContables.DataBase
 {
-    public class LogsDbContext : DbContext
+    public class LogDbContext : DbContext
     {
-        public LogsDbContext(DbContextOptions options)
-                : base(options)
+        public LogDbContext(DbContextOptions options)
+            : base(options)
         {
-
         }
 
         // Definimos la tabla para los logs
@@ -19,12 +18,13 @@ namespace PartidasContables.DataBase
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<CatalogoCuentaEntity>()
-            .HasOne(c => c.CuentaPadre)
-            .WithMany(c => c.CuentasHijas)
-            .HasForeignKey(c => c.IdCuentaPadre)
-            .OnDelete(DeleteBehavior.NoAction);
+                .HasOne(c => c.CuentaPadre)
+                .WithMany(c => c.CuentasHijas)
+                .HasForeignKey(c => c.IdCuentaPadre)
+                .OnDelete(DeleteBehavior.NoAction); // Asegura que NO haya cascada
 
-            // Configuracin de la entidad LogEntity
+
+            // Configuración de la entidad LogEntity
             modelBuilder.Entity<LogEntity>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -42,6 +42,17 @@ namespace PartidasContables.DataBase
                 entity.Property(e => e.IdPartida)
                     .IsRequired(false); // Opcional, solo si aplica
             });
+
+            // Set FKs OnRestrict
+            var eTypes = modelBuilder.Model.GetEntityTypes();
+            foreach (var type in eTypes)
+            {
+                var foreignKeys = type.GetForeignKeys();
+                foreach (var foreignKey in foreignKeys)
+                {
+                    foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
+                }
+            }
         }
     }
 }

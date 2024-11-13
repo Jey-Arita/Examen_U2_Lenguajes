@@ -3,16 +3,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace PartidasContables.Migrations.LogsDb
+namespace PartidasContables.Migrations.LogDb
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class addNames : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "dbo");
+
             migrationBuilder.CreateTable(
-                name: "CatalogoCuentaEntity",
+                name: "catalogo_cuentas",
+                schema: "dbo",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -24,12 +28,14 @@ namespace PartidasContables.Migrations.LogsDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CatalogoCuentaEntity", x => x.id);
+                    table.PrimaryKey("PK_catalogo_cuentas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_CatalogoCuentaEntity_CatalogoCuentaEntity_IdCuentaPadre",
+                        name: "FK_catalogo_cuentas_catalogo_cuentas_IdCuentaPadre",
                         column: x => x.IdCuentaPadre,
-                        principalTable: "CatalogoCuentaEntity",
-                        principalColumn: "id");
+                        principalSchema: "dbo",
+                        principalTable: "catalogo_cuentas",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,7 +68,8 @@ namespace PartidasContables.Migrations.LogsDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "PartidaEntity",
+                name: "partidas",
+                schema: "dbo",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -73,17 +80,18 @@ namespace PartidasContables.Migrations.LogsDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PartidaEntity", x => x.id);
+                    table.PrimaryKey("PK_partidas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_PartidaEntity_UserEntity_IdUsuario",
+                        name: "FK_partidas_UserEntity_IdUsuario",
                         column: x => x.IdUsuario,
                         principalTable: "UserEntity",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DetallePartidaEntity",
+                name: "detalle_partidas",
+                schema: "dbo",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -94,23 +102,26 @@ namespace PartidasContables.Migrations.LogsDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DetallePartidaEntity", x => x.id);
+                    table.PrimaryKey("PK_detalle_partidas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_DetallePartidaEntity_CatalogoCuentaEntity_IdCatalogoCuenta",
+                        name: "FK_detalle_partidas_catalogo_cuentas_IdCatalogoCuenta",
                         column: x => x.IdCatalogoCuenta,
-                        principalTable: "CatalogoCuentaEntity",
+                        principalSchema: "dbo",
+                        principalTable: "catalogo_cuentas",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DetallePartidaEntity_PartidaEntity_IdPartida",
+                        name: "FK_detalle_partidas_partidas_IdPartida",
                         column: x => x.IdPartida,
-                        principalTable: "PartidaEntity",
+                        principalSchema: "dbo",
+                        principalTable: "partidas",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Logs",
+                name: "logs",
+                schema: "dbo",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -121,37 +132,44 @@ namespace PartidasContables.Migrations.LogsDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Logs", x => x.id);
+                    table.PrimaryKey("PK_logs", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Logs_PartidaEntity_IdPartida",
+                        name: "FK_logs_partidas_IdPartida",
                         column: x => x.IdPartida,
-                        principalTable: "PartidaEntity",
-                        principalColumn: "id");
+                        principalSchema: "dbo",
+                        principalTable: "partidas",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CatalogoCuentaEntity_IdCuentaPadre",
-                table: "CatalogoCuentaEntity",
+                name: "IX_catalogo_cuentas_IdCuentaPadre",
+                schema: "dbo",
+                table: "catalogo_cuentas",
                 column: "IdCuentaPadre");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetallePartidaEntity_IdCatalogoCuenta",
-                table: "DetallePartidaEntity",
+                name: "IX_detalle_partidas_IdCatalogoCuenta",
+                schema: "dbo",
+                table: "detalle_partidas",
                 column: "IdCatalogoCuenta");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DetallePartidaEntity_IdPartida",
-                table: "DetallePartidaEntity",
+                name: "IX_detalle_partidas_IdPartida",
+                schema: "dbo",
+                table: "detalle_partidas",
                 column: "IdPartida");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Logs_IdPartida",
-                table: "Logs",
+                name: "IX_logs_IdPartida",
+                schema: "dbo",
+                table: "logs",
                 column: "IdPartida");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PartidaEntity_IdUsuario",
-                table: "PartidaEntity",
+                name: "IX_partidas_IdUsuario",
+                schema: "dbo",
+                table: "partidas",
                 column: "IdUsuario");
         }
 
@@ -159,16 +177,20 @@ namespace PartidasContables.Migrations.LogsDb
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DetallePartidaEntity");
+                name: "detalle_partidas",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Logs");
+                name: "logs",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "CatalogoCuentaEntity");
+                name: "catalogo_cuentas",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "PartidaEntity");
+                name: "partidas",
+                schema: "dbo");
 
             migrationBuilder.DropTable(
                 name: "UserEntity");

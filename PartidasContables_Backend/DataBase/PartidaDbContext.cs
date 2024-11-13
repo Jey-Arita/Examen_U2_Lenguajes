@@ -8,7 +8,7 @@ namespace PartidasContables.DataBase
     public class PartidaDbContext : IdentityDbContext<UserEntity>
     {
         public PartidaDbContext(DbContextOptions<PartidaDbContext> options)
-    : base(options)
+            : base(options)
         {
         }
 
@@ -16,9 +16,22 @@ namespace PartidasContables.DataBase
         {
             base.OnModelCreating(modelBuilder);
 
+            // Configuración para la entidad CatalogoCuentaEntity
+            modelBuilder.Entity<CatalogoCuentaEntity>()
+                .HasOne(c => c.CuentaPadre)
+                .WithMany(c => c.CuentasHijas)
+                .HasForeignKey(c => c.IdCuentaPadre)
+                .OnDelete(DeleteBehavior.NoAction); // Evita cascada en eliminación
+
+            // Configuración para la clave compuesta en SaldoEntity
+            modelBuilder.Entity<SaldoEntity>()
+                .HasKey(e => new { e.Año, e.Mes, e.MontoSaldo });
+
+            // Configuración general
             modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
             modelBuilder.HasDefaultSchema("security");
 
+            // Mapeo de tablas para Identity
             modelBuilder.Entity<UserEntity>().ToTable("users");
             modelBuilder.Entity<IdentityRole>().ToTable("roles");
             modelBuilder.Entity<IdentityUserRole<string>>().ToTable("users_roles");
@@ -26,19 +39,6 @@ namespace PartidasContables.DataBase
             modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("users_logins");
             modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("roles_claims");
             modelBuilder.Entity<IdentityUserToken<string>>().ToTable("users_tokens");
-
-
-            // Set FKs OnRestrict
-            var eTypes = modelBuilder.Model.GetEntityTypes();
-            foreach (var type in eTypes)
-            {
-                var foreignKeys = type.GetForeignKeys();
-                foreach (var foreignKey in foreignKeys)
-                {
-                    foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
-                }
-            }
-
         }
 
         public DbSet<CatalogoCuentaEntity> CatalogoCuentas { get; set; }

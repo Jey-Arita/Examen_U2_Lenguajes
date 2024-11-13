@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PartidasContables.DataBase.Entities
 {
+    [Table("catalogo_cuentas", Schema = "dbo")]
     public class CatalogoCuentaEntity : BaseEntity
     {
         [Required]

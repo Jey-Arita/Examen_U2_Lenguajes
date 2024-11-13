@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PartidasContables.DataBase.Entities
 {
+    [Table("logs", Schema = "dbo")]
     public class LogEntity : BaseEntity
     {
         public DateTime Fecha { get; set; }

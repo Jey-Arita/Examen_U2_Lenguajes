@@ -9,11 +9,11 @@ using PartidasContables.DataBase;
 
 #nullable disable
 
-namespace PartidasContables.Migrations.LogsDb
+namespace PartidasContables.Migrations.LogDb
 {
-    [DbContext(typeof(LogsDbContext))]
-    [Migration("20241112200524_Init")]
-    partial class Init
+    [DbContext(typeof(LogDbContext))]
+    [Migration("20241112234553_addNames")]
+    partial class addNames
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,7 +54,7 @@ namespace PartidasContables.Migrations.LogsDb
 
                     b.HasIndex("IdCuentaPadre");
 
-                    b.ToTable("CatalogoCuentaEntity");
+                    b.ToTable("catalogo_cuentas", "dbo");
                 });
 
             modelBuilder.Entity("PartidasContables.DataBase.Entities.DetallePartidaEntity", b =>
@@ -83,7 +83,7 @@ namespace PartidasContables.Migrations.LogsDb
 
                     b.HasIndex("IdPartida");
 
-                    b.ToTable("DetallePartidaEntity");
+                    b.ToTable("detalle_partidas", "dbo");
                 });
 
             modelBuilder.Entity("PartidasContables.DataBase.Entities.LogEntity", b =>
@@ -112,7 +112,7 @@ namespace PartidasContables.Migrations.LogsDb
 
                     b.HasIndex("IdPartida");
 
-                    b.ToTable("Logs");
+                    b.ToTable("logs", "dbo");
                 });
 
             modelBuilder.Entity("PartidasContables.DataBase.Entities.PartidaEntity", b =>
@@ -140,7 +140,7 @@ namespace PartidasContables.Migrations.LogsDb
 
                     b.HasIndex("IdUsuario");
 
-                    b.ToTable("PartidaEntity");
+                    b.ToTable("partidas", "dbo");
                 });
 
             modelBuilder.Entity("PartidasContables.DataBase.Entities.UserEntity", b =>
@@ -221,7 +221,7 @@ namespace PartidasContables.Migrations.LogsDb
                     b.HasOne("PartidasContables.DataBase.Entities.CatalogoCuentaEntity", "CuentaPadre")
                         .WithMany("CuentasHijas")
                         .HasForeignKey("IdCuentaPadre")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CuentaPadre");
@@ -232,13 +232,13 @@ namespace PartidasContables.Migrations.LogsDb
                     b.HasOne("PartidasContables.DataBase.Entities.CatalogoCuentaEntity", "CatalogoCuenta")
                         .WithMany()
                         .HasForeignKey("IdCatalogoCuenta")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("PartidasContables.DataBase.Entities.PartidaEntity", "Partida")
                         .WithMany("Detalles")
                         .HasForeignKey("IdPartida")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CatalogoCuenta");
@@ -250,7 +250,8 @@ namespace PartidasContables.Migrations.LogsDb
                 {
                     b.HasOne("PartidasContables.DataBase.Entities.PartidaEntity", "Partida")
                         .WithMany()
-                        .HasForeignKey("IdPartida");
+                        .HasForeignKey("IdPartida")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Partida");
                 });
@@ -260,7 +261,7 @@ namespace PartidasContables.Migrations.LogsDb
                     b.HasOne("PartidasContables.DataBase.Entities.UserEntity", "Usuario")
                         .WithMany()
                         .HasForeignKey("IdUsuario")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Usuario");
