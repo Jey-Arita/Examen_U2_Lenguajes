@@ -18,6 +18,13 @@ namespace PartidasContables.Controllers
         {
             _partidaService = partidaService;
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<ActionResult<ResponseDto<PartidaDto>>> PartidaList(PartidaDto partidaDto)
+        {
+            var response = await _partidaService.ListPartidaAsync(partidaDto);
+            return StatusCode(response.StatusCode, response);
+        }
 
         [HttpPost]
         [AllowAnonymous]

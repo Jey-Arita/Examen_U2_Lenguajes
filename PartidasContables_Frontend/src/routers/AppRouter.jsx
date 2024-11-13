@@ -1,7 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import { SecurityRouter } from "../PartidasContable/Security/routes"
-import { PartidasContableRouter } from "../PartidasContable/Partidas/routes/PartidasContableRoute"
-
+import { PartidasContableRouter } from "../PartidasContable/Partidas/routes"
 
 export const AppRouter = () => {
     return(
