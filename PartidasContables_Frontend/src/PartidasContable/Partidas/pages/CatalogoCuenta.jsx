@@ -1,73 +1,108 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { RxSwitch } from "react-icons/rx";
 import { motion } from "framer-motion";
+import {
+  useCatalogoGet,
+  useCrearCatalogoCuentas,
+  useEditarCatalogoCuentas,
+  useEliminarCatalogoCuentas,
+} from "../hooks";
 
 export const CatalogoCuenta = () => {
-  const [entries, setEntries] = useState([
-    {
-      id: 1,
-      code: "1001",
-      description: "Caja",
-      balance: 5000,
-      type: "Activo",
-      allowsMovement: true,
-    },
-    {
-      id: 2,
-      code: "2001",
-      description: "Cuentas por pagar",
-      balance: 6000,
-      type: "Pasivo",
-      allowsMovement: true,
-    },
-    {
-      id: 3,
-      code: "3001001",
-      description: "Capital social",
-      balance: 50000,
-      type: "Capital",
-      allowsMovement: false,
-    },
-  ]);
-
+  const [entries, setEntries] = useState([]);
   const [newEntry, setNewEntry] = useState({
-    code: "",
-    description: "",
-    balance: 0,
-    type: "Activo",
-    allowsMovement: true,
+    numeroCuenta: "",
+    descripcion: "",
+    tipoCuenta: "Activo",
+    saldo: 0,
+    idCuentaPadre: null,
+    cuentasHijas: [],
+    permiteMovimiento: true,
   });
-
   const [editingId, setEditingId] = useState(null);
-  const [user, setUser] = useState("Nombre de Usuario");
+  const [user] = useState("Nombre de Usuario");
 
-  const addEntry = () => {
-    setEntries([...entries, { ...newEntry, id: Date.now() }]);
-    setNewEntry({
-      code: "",
-      description: "",
-      balance: 0,
-      type: "Activo",
-      allowsMovement: true,
-    });
-  };
+  // Usar los hooks personalizados
+  const { cuentas, isLoading, error: fetchError } = useCatalogoGet();
+  const { crearCatalogo } = useCrearCatalogoCuentas();
+  const { editarCatalogo } = useEditarCatalogoCuentas();
+  const { eliminarCatalogo } = useEliminarCatalogoCuentas();
 
-  const startEditing = (id) => setEditingId(id);
-  const saveEdit = () => setEditingId(null);
+  // Actualizar entries cuando se cargan las cuentas
+  useEffect(() => {
+    if (cuentas && Array.isArray(cuentas)) {
+      setEntries(cuentas);
+    }
+  }, [cuentas]);
 
-  const updateEntry = (id, field, value) => {
-    setEntries(
-      entries.map((entry) =>
+  const updateEntry = useCallback((id, field, value) => {
+    setEntries(prev =>
+      prev.map((entry) =>
         entry.id === id ? { ...entry, [field]: value } : entry
       )
     );
+  }, []);
+
+  const addEntry = async () => {
+    try {
+      await crearCatalogo(newEntry);
+      // Limpiar el formulario
+      setNewEntry({
+        numeroCuenta: "",
+        descripcion: "",
+        tipoCuenta: "Activo",
+        saldo: 0,
+        idCuentaPadre: null,
+        cuentasHijas: [],
+        permiteMovimiento: true,
+      });
+    } catch (error) {
+      console.error("Error al agregar la cuenta:", error);
+    }
   };
+
+  const saveEdit = async (id) => {
+    try {
+      const entryToUpdate = entries.find((entry) => entry.id === id);
+      if (!entryToUpdate) return;
+
+      await editarCatalogo(id, entryToUpdate);
+      setEditingId(null);
+    } catch (error) {
+      console.error("Error al guardar la edición:", error);
+    }
+  };
+
+  const deleteEntry = async (id) => {
+    try {
+      await eliminarCatalogo(id);
+      // Actualizar el estado local después de eliminar
+      setEntries(prev => prev.filter((entry) => entry.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar la cuenta:", error);
+    }
+  };
+
+  const startEditing = useCallback((id) => {
+    setEditingId(id);
+  }, []);
+
+  if (isLoading) {
+    return <div className="container mx-auto py-10">Cargando...</div>;
+  }
+
+  if (fetchError) {
+    return (
+      <div className="container mx-auto py-10">
+        Error al cargar el catálogo: {fetchError}
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-4">Tabla de Catalogo de Cuenta</h1>
+      <h1 className="text-2xl font-bold mb-4">Catálogo de Cuentas</h1>
 
-      {/* Sección de Encabezado con Fecha y Usuario */}
       <div className="flex justify-between items-center mb-4">
         <div className="text-lg font-semibold">
           Fecha: {new Date().toLocaleDateString("es-HN")}
@@ -78,32 +113,36 @@ export const CatalogoCuenta = () => {
       <div className="grid grid-cols-2 gap-4 mb-4">
         <input
           type="text"
-          placeholder="Código de cuenta"
-          value={newEntry.code}
-          onChange={(e) => setNewEntry({ ...newEntry, code: e.target.value })}
+          placeholder="Número de cuenta"
+          value={newEntry.numeroCuenta}
+          onChange={(e) =>
+            setNewEntry({ ...newEntry, numeroCuenta: e.target.value })
+          }
           className="border px-2 py-1 rounded"
         />
         <input
           type="text"
           placeholder="Descripción"
-          value={newEntry.description}
+          value={newEntry.descripcion}
           onChange={(e) =>
-            setNewEntry({ ...newEntry, description: e.target.value })
+            setNewEntry({ ...newEntry, descripcion: e.target.value })
           }
           className="border px-2 py-1 rounded"
         />
         <input
           type="number"
           placeholder="Saldo"
-          value={newEntry.balance}
+          value={newEntry.saldo}
           onChange={(e) =>
-            setNewEntry({ ...newEntry, balance: parseFloat(e.target.value) })
+            setNewEntry({ ...newEntry, saldo: parseFloat(e.target.value) || 0 })
           }
           className="border px-2 py-1 rounded"
         />
         <select
-          value={newEntry.type}
-          onChange={(e) => setNewEntry({ ...newEntry, type: e.target.value })}
+          value={newEntry.tipoCuenta}
+          onChange={(e) =>
+            setNewEntry({ ...newEntry, tipoCuenta: e.target.value })
+          }
           className="border px-2 py-1 rounded"
         >
           <option value="Activo">Activo</option>
@@ -112,7 +151,7 @@ export const CatalogoCuenta = () => {
         </select>
         <div className="flex items-center space-x-2">
           <motion.div
-            animate={{ rotate: newEntry.allowsMovement ? 0 : 180 }}
+            animate={{ rotate: newEntry.permiteMovimiento ? 0 : 180 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
             <RxSwitch
@@ -120,142 +159,145 @@ export const CatalogoCuenta = () => {
               onClick={() =>
                 setNewEntry({
                   ...newEntry,
-                  allowsMovement: !newEntry.allowsMovement,
+                  permiteMovimiento: !newEntry.permiteMovimiento,
                 })
               }
               className={`cursor-pointer ${
-                newEntry.allowsMovement ? "text-green-500" : "text-red-500"
+                newEntry.permiteMovimiento ? "text-green-500" : "text-red-500"
               }`}
             />
           </motion.div>
-          <label htmlFor="allows-movement" className="ml-2">
-            Permite movimiento
-          </label>
+          <label className="ml-2">Permite movimiento</label>
         </div>
         <button
           onClick={addEntry}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Agregar entrada
         </button>
       </div>
 
-      <table className="table-auto w-full border">
-        <thead className="bg-gray-300">
-          <tr>
-            <th className="px-4 py-2 border">Código de Cuenta</th>
-            <th className="px-4 py-2 border">Descripción</th>
-            <th className="px-4 py-2 border">Saldo</th>
-            <th className="px-4 py-2 border">Tipo de Cuenta</th>
-            <th className="px-4 py-2 border">Permite Movimiento</th>
-            <th className="px-4 py-2 border">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.map((entry) => (
-            <tr key={entry.id}>
-              <td className="px-4 py-2 border">
-                {editingId === entry.id ? (
-                  <input
-                    type="text"
-                    value={entry.code}
-                    onChange={(e) =>
-                      updateEntry(entry.id, "code", e.target.value)
-                    }
-                    className="border px-2 py-1 rounded"
-                  />
-                ) : (
-                  entry.code
-                )}
-              </td>
-              <td className="px-4 py-2 border">
-                {editingId === entry.id ? (
-                  <input
-                    type="text"
-                    value={entry.description}
-                    onChange={(e) =>
-                      updateEntry(entry.id, "description", e.target.value)
-                    }
-                    className="border px-2 py-1 rounded"
-                  />
-                ) : (
-                  entry.description
-                )}
-              </td>
-              <td className="px-4 py-2 border">
-                {editingId === entry.id ? (
-                  <input
-                    type="number"
-                    value={entry.balance}
-                    onChange={(e) =>
-                      updateEntry(
-                        entry.id,
-                        "balance",
-                        parseFloat(e.target.value)
-                      )
-                    }
-                    className="border px-2 py-1 rounded"
-                  />
-                ) : (
-                  entry.balance.toLocaleString("es-HN", {
-                    style: "currency",
-                    currency: "HNL",
-                  })
-                )}
-              </td>
-              <td className="px-4 py-2 border">
-                {editingId === entry.id ? (
-                  <select
-                    value={entry.type}
-                    onChange={(e) =>
-                      updateEntry(entry.id, "type", e.target.value)
-                    }
-                    className="border px-2 py-1 rounded"
-                  >
-                    <option value="Activo">Activo</option>
-                    <option value="Pasivo">Pasivo</option>
-                    <option value="Capital">Capital</option>
-                  </select>
-                ) : (
-                  entry.type
-                )}
-              </td>
-              <td className="px-4 py-2 border">
-                {editingId === entry.id ? (
-                  <input
-                    type="checkbox"
-                    checked={entry.allowsMovement}
-                    onChange={(e) =>
-                      updateEntry(entry.id, "allowsMovement", e.target.checked)
-                    }
-                  />
-                ) : entry.allowsMovement ? (
-                  "Sí"
-                ) : (
-                  "No"
-                )}
-              </td>
-              <td className="px-4 py-2 border">
-                {editingId === entry.id ? (
-                  <button
-                    onClick={() => saveEdit(entry.id)}
-                    className="px-4 py-2 bg-green-500 text-white rounded"
-                  >
-                    Guardar
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => startEditing(entry.id)}
-                    className="px-4 py-2 bg-yellow-500 text-white rounded"
-                  >
-                    Modificar
-                  </button>
-                )}
-              </td>
+      {entries.length === 0 ? (
+        <div className="text-center py-4">No hay cuentas registradas</div>
+      ) : (
+        <table className="table-auto w-full border">
+          <thead className="bg-gray-300">
+            <tr>
+              <th className="px-4 py-2 border">Número de Cuenta</th>
+              <th className="px-4 py-2 border">Descripción</th>
+              <th className="px-4 py-2 border">Saldo</th>
+              <th className="px-4 py-2 border">Tipo de Cuenta</th>
+              <th className="px-4 py-2 border">Permite Movimiento</th>
+              <th className="px-4 py-2 border">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.id}>
+                <td className="px-4 py-2 border">
+                  {editingId === entry.id ? (
+                    <input
+                      type="text"
+                      value={entry.numeroCuenta}
+                      onChange={(e) =>
+                        updateEntry(entry.id, "numeroCuenta", e.target.value)
+                      }
+                      className="border px-2 py-1 rounded w-full"
+                    />
+                  ) : (
+                    entry.numeroCuenta
+                  )}
+                </td>
+                <td className="px-4 py-2 border">
+                  {editingId === entry.id ? (
+                    <input
+                      type="text"
+                      value={entry.descripcion}
+                      onChange={(e) =>
+                        updateEntry(entry.id, "descripcion", e.target.value)
+                      }
+                      className="border px-2 py-1 rounded w-full"
+                    />
+                  ) : (
+                    entry.descripcion
+                  )}
+                </td>
+                <td className="px-4 py-2 border">
+                  {editingId === entry.id ? (
+                    <input
+                      type="number"
+                      value={entry.saldo}
+                      onChange={(e) =>
+                        updateEntry(
+                          entry.id,
+                          "saldo",
+                          parseFloat(e.target.value) || 0
+                        )
+                      }
+                      className="border px-2 py-1 rounded w-full"
+                    />
+                  ) : (
+                    entry.saldo.toLocaleString("es-HN", {
+                      style: "currency",
+                      currency: "HNL",
+                    })
+                  )}
+                </td>
+                <td className="px-4 py-2 border">
+                  {editingId === entry.id ? (
+                    <select
+                      value={entry.tipoCuenta}
+                      onChange={(e) =>
+                        updateEntry(entry.id, "tipoCuenta", e.target.value)
+                      }
+                      className="border px-2 py-1 rounded w-full"
+                    >
+                      <option value="Activo">Activo</option>
+                      <option value="Pasivo">Pasivo</option>
+                      <option value="Capital">Capital</option>
+                    </select>
+                  ) : (
+                    entry.tipoCuenta
+                  )}
+                </td>
+                <td className="px-4 py-2 border text-center">
+                  <RxSwitch
+                    size={24}
+                    className={`cursor-pointer ${
+                      entry.permiteMovimiento ? "text-green-500" : "text-red-500"
+                    }`}
+                  />
+                </td>
+                <td className="px-4 py-2 border">
+                  {editingId === entry.id ? (
+                    <button
+                      onClick={() => saveEdit(entry.id)}
+                      className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Guardar
+                    </button>
+                  ) : (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => startEditing(entry.id)}
+                        className="px-2 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => deleteEntry(entry.id)}
+                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

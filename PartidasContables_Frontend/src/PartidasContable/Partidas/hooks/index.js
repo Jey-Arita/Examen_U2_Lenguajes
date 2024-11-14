@@ -1,2 +1,2 @@
 export * from './UsePartida'
-export * from './UseCuentasCatalogoGet'
+export * from './UseCuentasCatalogo'

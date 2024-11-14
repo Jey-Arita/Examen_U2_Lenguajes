@@ -35,6 +35,8 @@ namespace PartidasContables.Helpers
         private void MapForCatalogoCuenta()
         {
             CreateMap<CatalogoCuentaEntity, CatalogoCuentaDto>().ForMember(dest => dest.Saldo, opt => opt.MapFrom(src => src.Saldo));
+            CreateMap<CatalogoCuentaCreateDto, CatalogoCuentaEntity>();
+            CreateMap<CatalogoCuentaEditDto, CatalogoCuentaEntity>();
         }
     }
 }
