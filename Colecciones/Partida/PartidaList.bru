@@ -1,0 +1,20 @@
+meta {
+  name: PartidaList
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{PATH}}partida
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}
+
+body:json {
+  
+  
+}
