@@ -2,22 +2,25 @@ import { useEffect, useState } from "react";
 import { usePartida } from "../hooks/UsePartida";
 import { useCatalogoGet } from "../hooks";
 
-
 export const CrearPartidas = () => {
   const { createPartida, isLoading, error: apiError } = usePartida();
-  const { cuentas, isLoading: loadingCuentas, error: errorCuentas } = useCatalogoGet();  
+  const {
+    cuentas,
+    isLoading: loadingCuentas,
+    error: errorCuentas,
+  } = useCatalogoGet();
 
   const [partida, setPartida] = useState({
     fecha: "",
     descripcion: "",
     idUsuario: "",
-    detalles: []
+    detalles: [],
   });
 
   const [nuevoDetalle, setNuevoDetalle] = useState({
     idCatalogoCuenta: "",
     descripcion: "",
-    monto: 0, // El monto se actualizara automaticamente
+    monto: 0,
     tipoCuenta: "",
   });
 
@@ -32,9 +35,10 @@ export const CrearPartidas = () => {
       return;
     }
 
-    setPartida(prev => ({
+    // Agregar el detalle original
+    setPartida((prev) => ({
       ...prev,
-      detalles: [...prev.detalles, nuevoDetalle]
+      detalles: [...prev.detalles, nuevoDetalle],
     }));
 
     setNuevoDetalle({
@@ -46,25 +50,27 @@ export const CrearPartidas = () => {
   };
 
   const eliminarDetalle = (index) => {
-    setPartida(prev => ({
+    setPartida((prev) => ({
       ...prev,
-      detalles: prev.detalles.filter((_, i) => i !== index)
+      detalles: prev.detalles.filter((_, i) => i !== index),
     }));
   };
 
   const buscarCuenta = (input) => {
     setCuentaBusqueda(input);
-    const cuentaEncontrada = cuentas.find(cuenta =>
-      cuenta.numeroCuenta.includes(input) || cuenta.descripcion.toLowerCase().includes(input.toLowerCase())
+    const cuentaEncontrada = cuentas.find(
+      (cuenta) =>
+        cuenta.numeroCuenta.includes(input) ||
+        cuenta.descripcion.toLowerCase().includes(input.toLowerCase())
     );
 
     if (cuentaEncontrada) {
-      setNuevoDetalle(prev => ({
+      setNuevoDetalle((prev) => ({
         ...prev,
         idCatalogoCuenta: cuentaEncontrada.id,
         descripcion: cuentaEncontrada.descripcion,
         tipoCuenta: cuentaEncontrada.tipoCuenta,
-        monto: cuentaEncontrada.monto || 0, // Asignar monto de la cuenta automaticamente
+        monto: cuentaEncontrada.saldo || 0,
       }));
       setCuentaNoExistente(false);
     } else {
@@ -77,13 +83,21 @@ export const CrearPartidas = () => {
     setFormError("");
     setSuccess("");
 
-    if (!partida.fecha || !partida.descripcion || partida.detalles.length === 0) {
-      setFormError("Todos los campos son requeridos y debe haber al menos un detalle");
+    if (
+      !partida.fecha ||
+      !partida.descripcion ||
+      partida.detalles.length === 0
+    ) {
+      setFormError(
+        "Todos los campos son requeridos y debe haber al menos un detalle"
+      );
       return;
     }
 
     try {
-      const result = await createPartida(partida);
+      const result = await createPartida({
+        ...partida,
+      });
 
       if (result.status) {
         setSuccess("Partida creada exitosamente");
@@ -91,7 +105,7 @@ export const CrearPartidas = () => {
           fecha: "",
           descripcion: "",
           idUsuario: "",
-          detalles: []
+          detalles: [],
         });
       } else {
         setFormError(result.message || "Error al crear la partida");
@@ -101,7 +115,22 @@ export const CrearPartidas = () => {
     }
   };
 
-  const totalDetalles = partida.detalles.reduce((sum, detalle) => sum + detalle.monto, 0);
+  // Cálculo del balance
+  const balance = partida.detalles.reduce(
+    (acc, detalle) => {
+      if (detalle.tipoCuenta === "Activo") {
+        acc.activo += detalle.monto;
+      } else if (detalle.tipoCuenta === "Pasivo") {
+        acc.pasivo += detalle.monto;
+      } else if (detalle.tipoCuenta === "Capital") {
+        acc.capital += detalle.monto;
+      }
+      return acc;
+    },
+    { activo: 0, pasivo: 0, capital: 0 }
+  );
+
+  const montoFinal = balance.activo - (balance.pasivo + balance.capital);
 
 
   return (
@@ -127,7 +156,9 @@ export const CrearPartidas = () => {
             <input
               type="date"
               value={partida.fecha}
-              onChange={(e) => setPartida(prev => ({ ...prev, fecha: e.target.value }))}
+              onChange={(e) =>
+                setPartida((prev) => ({ ...prev, fecha: e.target.value }))
+              }
               className="border p-2 rounded w-full"
             />
           </div>
@@ -136,7 +167,9 @@ export const CrearPartidas = () => {
             <input
               type="text"
               value={partida.descripcion}
-              onChange={(e) => setPartida(prev => ({ ...prev, descripcion: e.target.value }))}
+              onChange={(e) =>
+                setPartida((prev) => ({ ...prev, descripcion: e.target.value }))
+              }
               className="border p-2 rounded w-full"
             />
           </div>
@@ -156,7 +189,9 @@ export const CrearPartidas = () => {
                 className="border p-2 rounded w-full"
               />
               {cuentaNoExistente && (
-                <div className="text-red-500 text-sm mt-1">La cuenta no existe en el catálogo</div>
+                <div className="text-red-500 text-sm mt-1">
+                  La cuenta no existe en el catálogo
+                </div>
               )}
             </div>
             <div>
@@ -164,7 +199,12 @@ export const CrearPartidas = () => {
               <input
                 type="text"
                 value={nuevoDetalle.descripcion}
-                onChange={(e) => setNuevoDetalle(prev => ({ ...prev, descripcion: e.target.value }))}
+                onChange={(e) =>
+                  setNuevoDetalle((prev) => ({
+                    ...prev,
+                    descripcion: e.target.value,
+                  }))
+                }
                 className="border p-2 rounded w-full"
                 disabled
               />
@@ -173,7 +213,10 @@ export const CrearPartidas = () => {
               <label className="block font-medium mb-1">Monto</label>
               <input
                 type="text"
-                value={nuevoDetalle.monto.toLocaleString("es-HN", { style: "currency", currency: "HNL" })}
+                value={nuevoDetalle.monto.toLocaleString("es-HN", {
+                  style: "currency",
+                  currency: "HNL",
+                })}
                 className="border p-2 rounded w-full"
                 disabled
               />
@@ -193,18 +236,46 @@ export const CrearPartidas = () => {
               <tr className="bg-gray-100">
                 <th className="border p-2">Cuenta</th>
                 <th className="border p-2">Descripción</th>
-                <th className="border p-2">Débito</th>
-                <th className="border p-2">Crédito</th>
+                <th className="border p-2">Activo</th>
+                <th className="border p-2">Pasivo</th>
+                <th className="border p-2">Capital</th>
                 <th className="border p-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {partida.detalles.map((detalle, index) => (
                 <tr key={index}>
-                  <td className="border p-2">{cuentas.find(c => c.id === detalle.idCatalogoCuenta)?.numeroCuenta}</td>
+                  <td className="border p-2">
+                    {
+                      cuentas.find((c) => c.id === detalle.idCatalogoCuenta)
+                        ?.numeroCuenta
+                    }
+                  </td>
                   <td className="border p-2">{detalle.descripcion}</td>
-                  <td className="border p-2">{detalle.tipoCuenta === "Gasto" ? detalle.monto.toLocaleString("es-HN", { style: "currency", currency: "HNL" }) : ""}</td>
-                  <td className="border p-2">{detalle.tipoCuenta === "Ingreso" ? detalle.monto.toLocaleString("es-HN", { style: "currency", currency: "HNL" }) : ""}</td>
+                  <td className="border p-2">
+                    {detalle.tipoCuenta === "Activo"
+                      ? detalle.monto.toLocaleString("es-HN", {
+                          style: "currency",
+                          currency: "HNL",
+                        })
+                      : ""}
+                  </td>
+                  <td className="border p-2">
+                    {detalle.tipoCuenta === "Pasivo"
+                      ? detalle.monto.toLocaleString("es-HN", {
+                          style: "currency",
+                          currency: "HNL",
+                        })
+                      : ""}
+                  </td>
+                  <td className="border p-2">
+                    {detalle.tipoCuenta === "Capital"
+                      ? detalle.monto.toLocaleString("es-HN", {
+                          style: "currency",
+                          currency: "HNL",
+                        })
+                      : ""}
+                  </td>
                   <td className="border p-2">
                     <button
                       type="button"
@@ -218,21 +289,22 @@ export const CrearPartidas = () => {
               ))}
             </tbody>
           </table>
+        </div>
 
-          {partida.detalles.length > 0 && (
-            <div className="mt-4 text-right">
-              <strong>Total: {totalDetalles.toLocaleString("es-HN", { style: "currency", currency: "HNL" })}</strong>
-            </div>
-          )}
+        <div className="mt-6">
+          <p>
+            <strong>Balance:</strong> {montoFinal.toLocaleString("es-HN", {
+              style: "currency",
+              currency: "HNL",
+            })}
+          </p>
         </div>
 
         <button
           type="submit"
-          disabled={isLoading}
-          className="bg-green-500 text-white px-6 py-3 rounded w-full"
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
         >
-          {isLoading ? "Creando..." : "Crear Partida"}
-          {loadingCuentas ? "Cargando..." : "Se cargo Cuentas"}
+          Crear Partida
         </button>
       </form>
     </div>

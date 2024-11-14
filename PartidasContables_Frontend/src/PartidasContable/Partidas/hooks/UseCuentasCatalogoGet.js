@@ -11,8 +11,13 @@ export const useCatalogoGet = () => {
     const fetchCuentas = async () => {
       setIsLoading(true);
       try {
-        const data = await getCatalogoCuentas();
-        setCuentas(data);
+        const response = await getCatalogoCuentas();
+        console.log("Respuesta completa:", response);
+        if (response?.data?.$values && Array.isArray(response.data.$values)) {
+          setCuentas(response.data.$values);
+        } else {
+          setError("No se encontraron cuentas en la respuesta.");
+        }
       } catch (error) {
         setError("Error al cargar el catálogo de cuentas");
       } finally {

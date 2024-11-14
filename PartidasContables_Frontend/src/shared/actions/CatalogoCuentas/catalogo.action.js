@@ -1,6 +1,5 @@
 import { partidaApi } from "../../../Config/api";
 
-
 export const getCatalogoCuentas = async () => {
     try {
       const {data} = await partidaApi.get("catalogo-cuentas");
