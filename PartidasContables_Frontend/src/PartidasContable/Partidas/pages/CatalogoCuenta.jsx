@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RxSwitch } from "react-icons/rx";
 import { motion } from "framer-motion";
 
-export const Partidas = () => {
+export const CatalogoCuenta = () => {
   const [entries, setEntries] = useState([
     {
       id: 1,
