@@ -26,5 +26,9 @@ namespace PartidasContables.DataBase.Entities
 
         [Column("monto", TypeName = "decimal(18,2)")]
         public decimal Monto { get; set; }
+
+        [Column("tipo_movimiento")]
+        public string TipoMovimiento { get; set; }
+
     }
 }

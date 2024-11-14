@@ -28,11 +28,11 @@ namespace PartidasContables
             services.AddSwaggerGen();
 
             //Evitamos la recursividad en los Json
-            services.AddControllers()
-            .AddJsonOptions(options =>
+            services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             });
+
 
 
             //Add Custom services

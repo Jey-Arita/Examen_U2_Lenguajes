@@ -30,10 +30,10 @@ namespace PartidasContables.Controllers
         [HttpPost]
         [AllowAnonymous]
         //[Authorize(Roles = $"{RolesConstant.ADMIN}")]
-        public async Task<ActionResult<ResponseDto<PartidaEntity>>> Create(PartidaDto partidaDto)
+        public async Task<ActionResult<ResponseDto<PartidaEntity>>> Create(PartidaCreateDto partidaCreateDto)
         {
             // Llamamos al servicio para crear la partida
-            var response = await _partidaService.CrearPartidaAsync(partidaDto);
+            var response = await _partidaService.CrearPartidaAsync(partidaCreateDto);
 
             // Devolvemos la respuesta con el código de estado correspondiente
             return StatusCode(response.StatusCode, response);

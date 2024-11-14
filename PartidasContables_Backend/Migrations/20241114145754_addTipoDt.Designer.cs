@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PartidasContables.DataBase;
 
@@ -11,9 +12,11 @@ using PartidasContables.DataBase;
 namespace PartidasContables.Migrations
 {
     [DbContext(typeof(PartidaDbContext))]
-    partial class PartidaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114145754_addTipoDt")]
+    partial class addTipoDt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,14 +265,9 @@ namespace PartidasContables.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("id_usuario");
 
-                    b.Property<Guid?>("PartidaId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("IdUsuario");
-
-                    b.HasIndex("PartidaId");
 
                     b.ToTable("partidas", "dbo");
                 });
@@ -472,12 +470,6 @@ namespace PartidasContables.Migrations
                         .HasForeignKey("IdUsuario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("PartidasContables.DataBase.Entities.PartidaEntity", "Partida")
-                        .WithMany()
-                        .HasForeignKey("PartidaId");
-
-                    b.Navigation("Partida");
 
                     b.Navigation("Usuario");
                 });

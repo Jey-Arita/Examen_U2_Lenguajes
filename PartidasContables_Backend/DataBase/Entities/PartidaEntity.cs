@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PartidasContables.DataBase.Entities
 {
@@ -26,6 +27,6 @@ namespace PartidasContables.DataBase.Entities
         public virtual UserEntity Usuario { get; set; }
 
         // Relación con DetallePartidaEntity
-        public ICollection<DetallePartidaEntity> Detalles { get; set; } = new List<DetallePartidaEntity>();
+        public List<DetallePartidaEntity> Detalles { get; set; } = new List<DetallePartidaEntity>();
     }
 }

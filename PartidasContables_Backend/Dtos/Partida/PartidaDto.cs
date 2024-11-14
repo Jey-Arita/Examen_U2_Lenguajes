@@ -11,6 +11,6 @@ namespace PartidasContables.Dtos.Partida
         public string Descripcion { get; set; } // Descripción de la partida o sinopsis
         public bool Desactivada { get; set; } = false; // Estado de la partida
         public string IdUsuario { get; set; }
-        public ICollection<DetallePartidaEntity> Detalles { get; set; } = new List<DetallePartidaEntity>();    // Relación con DetallePartidaEntity
+
     }
 }

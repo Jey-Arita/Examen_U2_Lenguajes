@@ -7,6 +7,6 @@ namespace PartidasContables.Services.Interface
     public interface IPartidaService
     {
         Task<ResponseDto<List<PartidaDto>>> ListPartidaAsync(PartidaDto partidaDto);
-        Task<ResponseDto<PartidaEntity>> CrearPartidaAsync(PartidaDto partidaDto);
+        Task<ResponseDto<PartidaEntity>> CrearPartidaAsync(PartidaCreateDto partidaDto);
     }
 }

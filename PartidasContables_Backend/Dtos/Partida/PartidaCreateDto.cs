@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PartidasContables.Dtos.DetallePartida;
+using PartidasContables.Dtos.DetallePartidaDto;
+using System.ComponentModel.DataAnnotations;
+
+
 
 namespace PartidasContables.Dtos.Partida
 {
@@ -10,5 +14,9 @@ namespace PartidasContables.Dtos.Partida
 
         [Required]
         public string IdUsuario { get; set; }
+
+        public DateTime Fecha { get; set; }
+
+        public List<DetallePartidaCreateDto> Detalles { get; set; }
     }
 }
