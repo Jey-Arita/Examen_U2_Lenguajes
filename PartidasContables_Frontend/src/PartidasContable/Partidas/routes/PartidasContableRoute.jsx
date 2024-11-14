@@ -1,16 +1,15 @@
-import { Route, Routes } from "react-router-dom";
-import { Partidas } from "../pages";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { CatalogoCuenta, CrearPartidas, InicioPage} from "../pages";
 
 export const PartidasContableRouter = () => {
     return (
       <div className="overflow-x-hidden bg-white w-screen h-screen bg-hero-pattern bg-no-repeat bg-cover">
-        <div className="px-6 py-8">
-          <div className="container flex justify-between mx-auto">
             <Routes>
-                <Route path="/*" element={<Partidas />} />
+                <Route path="/catalogo-cuenta" element={<CatalogoCuenta />} />
+                <Route path="/crear-partidas" element={<CrearPartidas/>}/>
+                <Route path="/inicio" element={<InicioPage/>}/>
             </Routes>
           </div>
-        </div>
-      </div>
+    
     );
   };

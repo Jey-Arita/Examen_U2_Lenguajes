@@ -38,6 +38,7 @@ namespace PartidasContables
             //Add Custom services
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IPartidaService, PartidaService>();
+            services.AddTransient<ICatalogoCuentaService, CatalogoCuentaService>();
 
 
             // Configuración del contexto de Partidas

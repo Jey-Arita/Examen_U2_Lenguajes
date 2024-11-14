@@ -110,4 +110,11 @@ namespace PartidasContables.Services
             };
         }
     }
+<<<<<<< HEAD
  }
+=======
+}
+    
+ 
+
+>>>>>>> b5c6121858893cd04e7e3dd195d599133f1aad92
