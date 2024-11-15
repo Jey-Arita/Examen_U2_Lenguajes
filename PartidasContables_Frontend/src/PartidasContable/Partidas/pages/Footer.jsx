@@ -12,7 +12,7 @@ export const Footer = ()  => {
   
           {/* Derechos de autor */}
           <div className="text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} TuEmpresa. Todos los derechos reservados.</p>
+            <p>&copy; {new Date().getFullYear()} Sistema de Partidas Contables. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>

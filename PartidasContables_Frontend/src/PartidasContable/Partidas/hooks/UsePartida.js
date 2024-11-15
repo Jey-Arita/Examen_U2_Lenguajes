@@ -1,50 +1,60 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { getPartidaAsync, postPartidaAsync } from "../../../shared/actions/PartidaContable/partida.action";
 
-export const usePartida = () => {
-  const [partidas, setPartidas] = useState([]); // Lista de partidas
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Función para cargar la lista de partidas
-  const loadPartidas = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const result = await getPartidaAsync();
-      setPartidas(result.data);
-    } catch (err) {
-      setError("Error al cargar las partidas");
-    } finally {
-      setIsLoading(false);
-    }
+// Obtener la lista de partidas
+export const usePartidaGet = () => {
+  const [partidas, setPartidas] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchPartidas = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getPartidaAsync();
+        if (result?.data && Array.isArray(result.data)) {
+          setPartidas(result.data);
+        } else {
+          setError("No se encontraron partidas en la respuesta.");
+        }
+      } catch (err) {
+        setError("Error al cargar las partidas");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPartidas();
   }, []);
 
-  // Función para crear una nueva partida
-  const createPartida = async (newPartida) => {
-    setIsLoading(true);
+  return { partidas, isLoading, error };
+};
+
+// Crear una nueva partida
+export const useCrearPartida = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+
+  const crearPartida = async (newPartida) => {
+    setLoading(true);
     setError(null);
+    setSuccess(false);
+
     try {
       const result = await postPartidaAsync(newPartida);
       if (result.status === 201) {
-        setPartidas((prevPartidas) => [...prevPartidas, result.data]);
+        setSuccess(true);
       } else {
         setError(result.message || "Error al crear la partida");
       }
-      return result;
     } catch (err) {
-      setError("Error de red");
+      setError(err.message || 'Error al crear la partida');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  return {
-    partidas,
-    isLoading,
-    error,
-    loadPartidas,
-    createPartida,
-  };
+  return { crearPartida, loading, error, success };
 };
-

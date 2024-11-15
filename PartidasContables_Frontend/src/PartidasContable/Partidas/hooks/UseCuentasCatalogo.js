@@ -12,8 +12,8 @@ export const useCatalogoGet = () => {
       setIsLoading(true);
       try {
         const response = await getCatalogoCuentas();
-        if (response?.data?.$values && Array.isArray(response.data.$values)) {
-          setCuentas(response.data.$values);
+        if (response?.data && Array.isArray(response.data)) {
+          setCuentas(response.data);
         } else {
           setError("No se encontraron cuentas en la respuesta.");
         }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PartidasContables.DataBase.Entities
 {
@@ -27,7 +28,7 @@ namespace PartidasContables.DataBase.Entities
 
         [ForeignKey(nameof(IdCuentaPadre))]
         public virtual CatalogoCuentaEntity CuentaPadre { get; set; }
-
+        [JsonIgnore]
         public ICollection<CatalogoCuentaEntity> CuentasHijas { get; set; } = new List<CatalogoCuentaEntity>();
 
         [Column("permite_movimiento")]

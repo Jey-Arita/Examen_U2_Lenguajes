@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { usePartida } from "../hooks/UsePartida";
-import { useCatalogoGet } from "../hooks";
+import { useState } from "react";
+import { useCatalogoGet, useCrearPartida } from "../hooks";
 
 export const CrearPartidas = () => {
-  const { createPartida, isLoading, error: apiError } = usePartida();
+  const { crearPartida, isLoading, error: apiError } = useCrearPartida();
   const {
     cuentas,
     isLoading: loadingCuentas,
@@ -13,48 +12,22 @@ export const CrearPartidas = () => {
   const [partida, setPartida] = useState({
     fecha: "",
     descripcion: "",
-    idUsuario: "",
     detalles: [],
+    IdUsuario: "1caa53f1-2d16-4c04-a07d-3e6e9435baa6"
   });
 
   const [nuevoDetalle, setNuevoDetalle] = useState({
     idCatalogoCuenta: "",
     descripcion: "",
     monto: 0,
-    tipoCuenta: "",
+    tipoMovimiento: "",
   });
 
+  const [cuentaSeleccionada, setCuentaSeleccionada] = useState(null); // Para mostrar datos de la cuenta seleccionada
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState("");
   const [cuentaBusqueda, setCuentaBusqueda] = useState("");
   const [cuentaNoExistente, setCuentaNoExistente] = useState(false);
-
-  const agregarDetalle = () => {
-    if (!nuevoDetalle.idCatalogoCuenta) {
-      setFormError("La cuenta es obligatoria");
-      return;
-    }
-
-    // Agregar el detalle original
-    setPartida((prev) => ({
-      ...prev,
-      detalles: [...prev.detalles, nuevoDetalle],
-    }));
-
-    setNuevoDetalle({
-      idCatalogoCuenta: "",
-      descripcion: "",
-      monto: 0, // Reiniciar monto despues de agregar el detalle
-      tipoCuenta: "",
-    });
-  };
-
-  const eliminarDetalle = (index) => {
-    setPartida((prev) => ({
-      ...prev,
-      detalles: prev.detalles.filter((_, i) => i !== index),
-    }));
-  };
 
   const buscarCuenta = (input) => {
     setCuentaBusqueda(input);
@@ -68,14 +41,42 @@ export const CrearPartidas = () => {
       setNuevoDetalle((prev) => ({
         ...prev,
         idCatalogoCuenta: cuentaEncontrada.id,
-        descripcion: cuentaEncontrada.descripcion,
-        tipoCuenta: cuentaEncontrada.tipoCuenta,
-        monto: cuentaEncontrada.saldo || 0,
       }));
+      setCuentaSeleccionada(cuentaEncontrada);
       setCuentaNoExistente(false);
     } else {
       setCuentaNoExistente(true);
+      setCuentaSeleccionada(null);
     }
+  };
+
+  const agregarDetalle = () => {
+    if (!nuevoDetalle.idCatalogoCuenta || !nuevoDetalle.tipoMovimiento || nuevoDetalle.monto <= 0) {
+      setFormError("Todos los campos de detalle son obligatorios");
+      return;
+    }
+    console.log("Detalle a agregar:", nuevoDetalle);
+
+    setPartida((prev) => ({
+      ...prev,
+      detalles: [...prev.detalles, nuevoDetalle],
+    }));
+
+    setNuevoDetalle({
+      idCatalogoCuenta: "",
+      descripcion: "",
+      monto: 0,
+      tipoMovimiento: "",
+    });
+    setCuentaSeleccionada(null);
+    setCuentaBusqueda("");
+  };
+
+  const eliminarDetalle = (index) => {
+    setPartida((prev) => ({
+      ...prev,
+      detalles: prev.detalles.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -83,70 +84,50 @@ export const CrearPartidas = () => {
     setFormError("");
     setSuccess("");
 
-    if (
-      !partida.fecha ||
-      !partida.descripcion ||
-      partida.detalles.length === 0
-    ) {
-      setFormError(
-        "Todos los campos son requeridos y debe haber al menos un detalle"
-      );
+    if (!partida.fecha || !partida.descripcion || partida.detalles.length === 0) {
+      setFormError("Todos los campos son requeridos y debe haber al menos un detalle");
       return;
     }
+    console.log("Partida a enviar:", partida);
 
     try {
-      const result = await createPartida({
-        ...partida,
-      });
-
+      const result = await crearPartida(partida);
+      console.log("Respuesta de la API:", result); 
+        
       if (result.status) {
         setSuccess("Partida creada exitosamente");
-        setPartida({
-          fecha: "",
-          descripcion: "",
-          idUsuario: "",
-          detalles: [],
-        });
+        setPartida({ fecha: "", descripcion: "", detalles: [] });
       } else {
         setFormError(result.message || "Error al crear la partida");
       }
     } catch (error) {
-      setFormError("Error al conectar con el servidor");
+      console.log("Error al crear la partida:", error);
+      setFormError(`Error: ${error.message}`);
     }
   };
 
-  // Cálculo del balance
   const balance = partida.detalles.reduce(
     (acc, detalle) => {
-      if (detalle.tipoCuenta === "Activo") {
-        acc.activo += detalle.monto;
-      } else if (detalle.tipoCuenta === "Pasivo") {
-        acc.pasivo += detalle.monto;
-      } else if (detalle.tipoCuenta === "Capital") {
-        acc.pasivo += detalle.monto;
+      if (detalle.tipoMovimiento === "Debe") {
+        acc.debe += detalle.monto;
+      } else if (detalle.tipoMovimiento === "Haber") {
+        acc.haber += detalle.monto;
       }
       return acc;
     },
-    { activo: 0, pasivo: 0 }
+    { debe: 0, haber: 0 }
   );
-
-  const montoFinal = balance.activo - (balance.pasivo);
 
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Crear Partida Contable</h1>
 
-      {(formError || apiError || errorCuentas) && (
-        <div className="mb-4 p-2 bg-red-100 text-red-800 rounded">
-          {formError || apiError || errorCuentas}
-        </div>
+      {formError && (
+        <div className="mb-4 p-2 bg-red-100 text-red-800 rounded">{formError}</div>
       )}
-
       {success && (
-        <div className="mb-4 p-2 bg-green-100 text-green-800 rounded">
-          {success}
-        </div>
+        <div className="mb-4 p-2 bg-green-100 text-green-800 rounded">{success}</div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -163,7 +144,7 @@ export const CrearPartidas = () => {
             />
           </div>
           <div>
-            <label className="block font-medium mb-1">Descripción</label>
+            <label className="block font-medium mb-1">Descripción General</label>
             <input
               type="text"
               value={partida.descripcion}
@@ -180,18 +161,16 @@ export const CrearPartidas = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block font-medium mb-1">Cuenta</label>
+              <label className="block font-medium mb-1">Buscar Cuenta</label>
               <input
                 type="text"
                 value={cuentaBusqueda}
                 onChange={(e) => buscarCuenta(e.target.value)}
-                placeholder="Buscar o escribir cuenta"
+                placeholder="Número o descripción de cuenta"
                 className="border p-2 rounded w-full"
               />
               {cuentaNoExistente && (
-                <div className="text-red-500 text-sm mt-1">
-                  La cuenta no existe en el catálogo
-                </div>
+                <p className="text-red-500 text-sm mt-1">Cuenta no encontrada</p>
               )}
             </div>
             <div>
@@ -205,97 +184,113 @@ export const CrearPartidas = () => {
                     descripcion: e.target.value,
                   }))
                 }
+                placeholder="Descripción del detalle"
                 className="border p-2 rounded w-full"
-                disabled
               />
             </div>
             <div>
               <label className="block font-medium mb-1">Monto</label>
               <input
-                type="text"
-                value={nuevoDetalle.monto.toLocaleString("es-HN", {
-                  style: "currency",
-                  currency: "HNL",
-                })}
+                type="number"
+                value={nuevoDetalle.monto}
+                onChange={(e) =>
+                  setNuevoDetalle((prev) => ({
+                    ...prev,
+                    monto: parseFloat(e.target.value) || 0,
+                  }))
+                }
                 className="border p-2 rounded w-full"
-                disabled
               />
             </div>
+            <div>
+              <label className="block font-medium mb-1">Tipo de Cuenta</label>
+              <select
+                value={nuevoDetalle.tipoMovimiento}
+                onChange={(e) =>
+                  setNuevoDetalle((prev) => ({
+                    ...prev,
+                    tipoMovimiento: e.target.value,
+                  }))
+                }
+                className="border p-2 rounded w-full"
+              >
+                <option value="">Seleccione</option>
+                <option value="Debe">Debe</option>
+                <option value="Haber">Haber</option>
+              </select>
+            </div>
           </div>
+
+          {cuentaSeleccionada && (
+            <div className="p-4 border rounded bg-gray-50 mt-4">
+              <h3 className="font-semibold mb-2">Detalles de la Cuenta Seleccionada</h3>
+              <p><strong>Número:</strong> {cuentaSeleccionada.numeroCuenta}</p>
+              <p><strong>Descripción:</strong> {cuentaSeleccionada.descripcion}</p>
+              <p><strong>Saldo:</strong> {cuentaSeleccionada.saldo}</p>
+            </div>
+          )}
 
           <button
             type="button"
             onClick={agregarDetalle}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-4"
           >
-            Agregar
+            Agregar Detalle
           </button>
-
-          <table className="w-full border-collapse border mt-6">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border p-2">Cuenta</th>
-                <th className="border p-2">Descripción</th>
-                <th className="border p-2">Activo</th>
-                <th className="border p-2">Pasivo</th>
-                <th className="border p-2">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partida.detalles.map((detalle, index) => (
-                <tr key={index}>
-                  <td className="border p-2">
-                    {
-                      cuentas.find((c) => c.id === detalle.idCatalogoCuenta)
-                        ?.numeroCuenta
-                    }
-                  </td>
-                  <td className="border p-2">{detalle.descripcion}</td>
-                  <td className="border p-2">
-                    {detalle.tipoCuenta === "Activo"
-                      ? detalle.monto.toLocaleString("es-HN", {
-                          style: "currency",
-                          currency: "HNL",
-                        })
-                      : ""}
-                  </td>
-                  <td className="border p-2">
-                    {detalle.tipoCuenta === "Pasivo"
-                      ? detalle.monto.toLocaleString("es-HN", {
-                          style: "currency",
-                          currency: "HNL",
-                        })
-                      : ""}
-                  </td>
-                  <td className="border p-2">
-                    <button
-                      type="button"
-                      onClick={() => eliminarDetalle(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
 
-        <div className="mt-6">
-          <p>
-            <strong>Balance:</strong> {montoFinal.toLocaleString("es-HN", {
-              style: "currency",
-              currency: "HNL",
-            })}
+        <table className="w-full mt-6 border">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="p-2 border">Cuenta</th>
+              <th className="p-2 border">Descripción</th>
+              <th className="p-2 border">Monto</th>
+              <th className="p-2 border">Tipo</th>
+              <th className="p-2 border">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {partida.detalles.map((detalle, index) => (
+              <tr key={index}>
+                <td className="p-2 border">{detalle.idCatalogoCuenta}</td>
+                <td className="p-2 border">{detalle.descripcion}</td>
+                <td className="p-2 border">{detalle.monto}</td>
+                <td className="p-2 border">{detalle.tipoMovimiento}</td>
+                <td className="p-2 border">
+                  <button
+                    onClick={() => eliminarDetalle(index)}
+                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <div className="mt-4">
+          <p className="text-gray-700">
+            <strong>Total Debe:</strong> {balance.debe.toFixed(2)} |{" "}
+            <strong>Total Haber:</strong> {balance.haber.toFixed(2)}
+          </p>
+          <p
+            className={`font-semibold ${
+              balance.debe === balance.haber ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {balance.debe === balance.haber
+              ? "El balance es correcto"
+              : "El balance no cuadra"}
           </p>
         </div>
 
         <button
           type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          disabled={isLoading || balance.debe !== balance.haber}
+          className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 mt-6"
         >
-          Crear Partida
+          {isLoading ? "Guardando..." : "Crear Partida"}
         </button>
       </form>
     </div>
