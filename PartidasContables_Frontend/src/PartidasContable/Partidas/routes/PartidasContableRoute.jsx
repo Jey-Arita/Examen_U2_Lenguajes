@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { CatalogoCuenta, CrearPartidas, InicioPage, LogPages} from "../pages";
+import { CatalogoCuenta, CrearPartidas, Footer, InicioPage, LogPages} from "../pages";
 
 export const PartidasContableRouter = () => {
     return (
@@ -10,7 +10,9 @@ export const PartidasContableRouter = () => {
                 <Route path="/inicio" element={<InicioPage/>}/>
                 <Route path="/logs" element={<LogPages/>}/>
             </Routes>
+            <footer className="mt-auto">
+              <Footer/>
+            </footer>
           </div>
-    
     );
   };

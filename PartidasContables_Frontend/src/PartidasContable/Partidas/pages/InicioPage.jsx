@@ -21,6 +21,11 @@ export const InicioPage = () => {
               <span className="text-lg">Crear Partida</span>
             </button>
           </Link>
+          <Link to="/menu//logs">
+            <button className="w-full h-32 flex flex-col items-center justify-center gap-2 bg-green-100 hover:bg-green-200 text-green-800 font-semibold rounded-lg shadow-md transition duration-200 transform hover:scale-105">
+              <span className="text-lg">Historial de Logs</span>
+            </button>
+          </Link>
         </div>
       </div>
     </div>
