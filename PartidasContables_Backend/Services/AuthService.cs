@@ -19,13 +19,15 @@ namespace PartidasContables.Services
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthService> _logger;
         private readonly PartidaDbContext _context;
+        private readonly ILogService _logService;
 
         public AuthService(
             SignInManager<UserEntity> signInManager,
             UserManager<UserEntity> userManager,
             IConfiguration configuration,
             ILogger<AuthService> logger,
-            PartidaDbContext context
+            PartidaDbContext context,
+            ILogService logService
             )
         {
             this._signInManager = signInManager;
@@ -33,6 +35,7 @@ namespace PartidasContables.Services
             this._configuration = configuration;
             this._logger = logger;
             this._context = context;
+            this._logService = logService;
         }
 
         private async Task<List<Claim>> GetClaims(UserEntity userEntity)
@@ -122,7 +125,9 @@ namespace PartidasContables.Services
                     .AddMinutes(int.Parse(_configuration["JWT:RefreshTokenExpire"] ?? "30"));
 
                 _context.Entry(userEntity);
+                //await _logService.RegistrarLogAsync("Inicio de sesión exitoso para el usuario", userEntity.Id);
                 await _context.SaveChangesAsync();
+                
 
                 return new ResponseDto<LoginResponseDto>
                 {
@@ -147,7 +152,6 @@ namespace PartidasContables.Services
                 StatusCode = 401,
                 Message = "Fallo el inicio de sesión"
             };
-
 
         }
 

@@ -30,7 +30,7 @@ namespace PartidasContables.Controllers
         public async Task<ActionResult<ResponseDto<PartidaDto>>> PartidaList()
         {
             var response = await _partidaService.ListPartidaAsync();
-            await _logService.RegistrarLogAsync("Ver Partidas", null);
+            await _logService.RegistrarLogAsync("Ver Partidas", "");
             return StatusCode(response.StatusCode, response);
         }
 
@@ -42,7 +42,7 @@ namespace PartidasContables.Controllers
             var response = await _partidaService.CrearPartidaAsync(partidaCreateDto);
 
             // Registrar el log de la acción de creación
-           await _logService.RegistrarLogAsync("Crear Partida", response.Data.Id);
+           await _logService.RegistrarLogAsync("Crear Partida", response.Data.Id.ToString());
 
             // Devolvemos la respuesta con el código de estado correspondiente
             return StatusCode(response.StatusCode, response);

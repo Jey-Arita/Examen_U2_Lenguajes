@@ -20,9 +20,9 @@ namespace PartidasContables.DataBase.Entities
         public string Accion { get; set; } // Ej: "Crear Partida" o "Eliminar Partida"
 
         [Column("id_partida")]
-        public Guid? IdPartida { get; set; } // Permite nulos si es opcional
+        public string IdPartida { get; set; } // Permite nulos si es opcional
         [Column("id_cuenta")]
-        public Guid? IdCuenta { get; set; } // Permite nulos si es opcional
+        public string IdCuenta { get; set; } // Permite nulos si es opcional
 
     }
 }
