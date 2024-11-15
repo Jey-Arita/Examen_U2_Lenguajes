@@ -8,8 +8,6 @@ namespace PartidasContables.Dtos.Partida
 {
     public class PartidaCreateDto
     {
-        [Required]
-        [MaxLength(500)]
         public string Descripcion { get; set; } // Descripción de la partida o sinopsis
         public string IdUsuario { get; set; }
         public DateTime Fecha { get; set; }

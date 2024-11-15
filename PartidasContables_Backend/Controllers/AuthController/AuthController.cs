@@ -12,11 +12,14 @@ namespace PartidasContables.Controllers.AuthController
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ILogService _logService;
+
         public AuthController(
-            IAuthService authService
+            IAuthService authService, ILogService logService
             )
         {
             this._authService = authService;
+            this._logService = logService;
         }
 
         [HttpPost("login")]

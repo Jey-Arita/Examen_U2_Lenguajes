@@ -1,100 +1,46 @@
-﻿//using AutoMapper;
-//using Microsoft.EntityFrameworkCore;
-//using Microsoft.IdentityModel.Tokens;
-//using Newtonsoft.Json;
-//using PartidasContables.DataBase;
-//using PartidasContables.DataBase.Entities;
-//using PartidasContables.Dtos.Common;
-//using PartidasContables.Dtos.LogDatabase;
-//using PartidasContables.Services.Interface;
+﻿using PartidasContables.DataBase.Entities;
+using PartidasContables.DataBase;
+using PartidasContables.Services.Interface;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Threading.Tasks;
 
-//namespace PartidasContables.Services
-//{
-//    public class LogServices : ILogService
-//    {
-//        private readonly LogDbContext _context;
-//        private readonly IMapper _mapper;
+namespace PartidasContables.Services
+{
+    public class LogService : ILogService
+    {
+        private readonly LogDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-//        public LogServices(LogDbContext context, IMapper mapper)
-//        {
-//            this._context = context;
-//            this._mapper = mapper;
-//        }
-//        public async Task<ResponseDto<Guid>> CreateLog(LogDatabaseCreateDto logDto)
-//        {
-//            try
-//            {
-//                // Mapeamos LogDatabaseCreate a LogEntity
-//                var logEntity = _mapper.Map<LogEntity>(logDto);
-//                logEntity.Fecha = DateTime.UtcNow;
+        public LogService(LogDbContext context, IHttpContextAccessor httpContextAccessor)
+        {
+            _context = context;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
-//                // Convertimos los detalles en JSON para almacenarlos
-//                if (logDto.Detalles != null)
-//                {
-//                    logEntity.Detalles = Newtonsoft.Json.JsonConvert.SerializeObject(logDto.Detalles);
-//                }
+        public async Task RegistrarLogAsync(string accion, Guid? idPartida = null)
+        {
+            // Obtener el IdUsuario desde el token
+            var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new Exception("No se encontró el UserId en el token.");
+            }
 
-//                _context.Logs.Add(logEntity);
-//                await _context.SaveChangesAsync();
+            // Crear un nuevo objeto de log
+            var log = new LogEntity
+            {
+                Fecha = DateTime.UtcNow,
+                IdUsuario = userId,
+                Accion = accion,
+                IdPartida = idPartida
+            };
 
-//                return new ResponseDto<Guid>
-//                {
-//                    StatusCode = 201,
-//                    Status = true,
-//                    Data = logEntity.Id,
-//                    Message = "Log creado exitosamente"
-//                };
-//            }
-//            catch (Exception ex)
-//            {
-//                return new ResponseDto<Guid>
-//                {
-//                    Status = false,
-//                    Message = $"Error al crear el log: {ex.Message}"
-//                };
-//            }
-//        }
+            // Agregar el log al DbContext
+            _context.Logs.Add(log);
 
-//        public async Task<ResponseDto<List<LogDatabaseDto>>> GetLogs()
-//        {
-//            try
-//            {
-//                // Consultamos todos los logs y los convertimos a LogDatabaseDto
-//                var logs = await _context.Logs.ToListAsync();
-//                var logDtos = _mapper.Map<List<LogDatabaseDto>>(logs);
-
-//                // Deserializamos el campo Detalles de JSON a Dictionary<string, object>
-//                foreach (var logDto in logDtos)
-//                {
-//                    if (!string.IsNullOrEmpty(logDto.Detalles))
-//                    {
-//                        try
-//                        {
-//                            logDto.Detalles = JsonConvert.DeserializeObject<Dictionary<string, object>>(logDto.Detalles);
-//                        }
-//                        catch (JsonException ex)
-//                        {
-//                            // Maneja el error de deserialización aquí, por ejemplo, logueándolo
-//                            logDto.Detalles = null; // O puedes asignar un valor por defecto
-//                        }
-//                    }
-//                }
-//                return new ResponseDto<List<LogDatabaseDto>>
-//                {
-//                    StatusCode = 200,
-//                    Status = true,
-//                    Data = logDtos,
-//                    Message = "Logs obtenidos exitosamente"
-//                };
-//            }
-//            catch (Exception ex)
-//            {
-//                return new ResponseDto<List<LogDatabaseDto>>
-//                {
-//                    Status = false,
-//                    Message = $"Error al obtener los logs: {ex.Message}"
-//                };
-//            }
-//        }
-//    }
-//}
+            // Guardar los cambios en la base de datos
+            await _context.SaveChangesAsync();
+        }
+    }
+}

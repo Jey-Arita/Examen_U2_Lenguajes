@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PartidasContables.DataBase;
 
@@ -11,9 +12,11 @@ using PartidasContables.DataBase;
 namespace PartidasContables.Migrations.LogDb
 {
     [DbContext(typeof(LogDbContext))]
-    partial class LogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241115063447_eliminandoRelacion")]
+    partial class eliminandoRelacion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,10 +83,6 @@ namespace PartidasContables.Migrations.LogDb
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2")
                         .HasColumnName("fecha");
-
-                    b.Property<Guid?>("IdCuenta")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("id_cuenta");
 
                     b.Property<Guid?>("IdPartida")
                         .HasColumnType("uniqueidentifier")

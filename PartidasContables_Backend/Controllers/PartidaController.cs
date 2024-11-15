@@ -4,6 +4,7 @@ using PartidasContables.Constants;
 using PartidasContables.DataBase.Entities;
 using PartidasContables.Dtos.Common;
 using PartidasContables.Dtos.Partida;
+using PartidasContables.Services;
 using PartidasContables.Services.Interface;
 
 namespace PartidasContables.Controllers
@@ -15,11 +16,13 @@ namespace PartidasContables.Controllers
     {
         private readonly IPartidaService _partidaService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogService _logService;
 
-        public PartidaController(IPartidaService partidaService, IHttpContextAccessor httpContextAccessor)
+        public PartidaController(IPartidaService partidaService, IHttpContextAccessor httpContextAccessor, ILogService logService)
         {
             _partidaService = partidaService;
             _httpContextAccessor = httpContextAccessor;
+            _logService = logService;
         }
 
         [HttpGet]
@@ -27,6 +30,7 @@ namespace PartidasContables.Controllers
         public async Task<ActionResult<ResponseDto<PartidaDto>>> PartidaList()
         {
             var response = await _partidaService.ListPartidaAsync();
+            await _logService.RegistrarLogAsync("Ver Partidas", null);
             return StatusCode(response.StatusCode, response);
         }
 
@@ -36,6 +40,9 @@ namespace PartidasContables.Controllers
         {
             // Llamamos al servicio para crear la partida
             var response = await _partidaService.CrearPartidaAsync(partidaCreateDto);
+
+            // Registrar el log de la acción de creación
+           await _logService.RegistrarLogAsync("Crear Partida", response.Data.Id);
 
             // Devolvemos la respuesta con el código de estado correspondiente
             return StatusCode(response.StatusCode, response);

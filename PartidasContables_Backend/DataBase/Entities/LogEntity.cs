@@ -21,8 +21,8 @@ namespace PartidasContables.DataBase.Entities
 
         [Column("id_partida")]
         public Guid? IdPartida { get; set; } // Permite nulos si es opcional
+        [Column("id_cuenta")]
+        public Guid? IdCuenta { get; set; } // Permite nulos si es opcional
 
-        [ForeignKey("IdPartida")]
-        public virtual PartidaEntity Partida { get; set; }
     }
 }

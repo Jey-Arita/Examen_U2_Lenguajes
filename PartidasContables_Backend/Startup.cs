@@ -32,7 +32,9 @@ namespace PartidasContables
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IPartidaService, PartidaService>();
             services.AddTransient<ICatalogoCuentaService, CatalogoCuentaService>();
-            
+            services.AddScoped<ILogService, LogService>();
+
+
 
 
             // Configuración del contexto de Partidas
