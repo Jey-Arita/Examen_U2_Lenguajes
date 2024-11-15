@@ -27,14 +27,6 @@ namespace PartidasContables
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            //Evitamos la recursividad en los Json
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            });
-
-
-
             //Add Custom services
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IPartidaService, PartidaService>();

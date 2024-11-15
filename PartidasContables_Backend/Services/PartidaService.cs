@@ -12,18 +12,21 @@ namespace PartidasContables.Services
     {
         private readonly PartidaDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<PartidaEntity> _logger;
 
-        public PartidaService(PartidaDbContext context, IMapper mapper)
+        public PartidaService(PartidaDbContext context, IMapper mapper, ILogger<PartidaEntity> logger)
         {
             _context = context;
             _mapper = mapper;
+            this._logger = logger;
         }
 
-        public async Task<ResponseDto<PartidaEntity>> CrearPartidaAsync(PartidaCreateDto partidaCreateDto)
+        public async Task<ResponseDto<PartidaDto>> CrearPartidaAsync(PartidaCreateDto partidaCreateDto)
         {
+            // Validar que la partida tenga al menos un detalle
             if (partidaCreateDto.Detalles == null || !partidaCreateDto.Detalles.Any())
             {
-                return new ResponseDto<PartidaEntity>
+                return new ResponseDto<PartidaDto>
                 {
                     StatusCode = 400,
                     Status = false,
@@ -32,6 +35,7 @@ namespace PartidasContables.Services
                 };
             }
 
+            // Comenzamos la transacción
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
@@ -47,7 +51,7 @@ namespace PartidasContables.Services
                     if (catalogoCuenta == null)
                     {
                         await transaction.RollbackAsync();
-                        return new ResponseDto<PartidaEntity>
+                        return new ResponseDto<PartidaDto>
                         {
                             StatusCode = 404,
                             Status = false,
@@ -56,6 +60,7 @@ namespace PartidasContables.Services
                         };
                     }
 
+                    // Actualizamos el saldo según el tipo de cuenta
                     if (catalogoCuenta.TipoCuenta == "Activo" || catalogoCuenta.TipoCuenta == "Gasto")
                         catalogoCuenta.Saldo += detalle.Monto;
                     else if (catalogoCuenta.TipoCuenta == "Pasivo" || catalogoCuenta.TipoCuenta == "Ingreso")
@@ -64,32 +69,39 @@ namespace PartidasContables.Services
                     _context.CatalogoCuentas.Update(catalogoCuenta);
                 }
 
-                // Asigna los detalles mapeados directamente a la propiedad de detalles de partidaEntity
+                // Asignamos los detalles mapeados a partidaEntity
                 partidaEntity.Detalles = _mapper.Map<List<DetallePartidaEntity>>(partidaCreateDto.Detalles);
 
-                // Agrega la entidad de partida (incluyendo los detalles) al contexto
+                // Agregamos la entidad de partida al contexto
                 _context.Partidas.Add(partidaEntity);
 
+                // Guardamos los cambios en la base de datos
                 await _context.SaveChangesAsync();
+
+                // Confirmamos la transacción
                 await transaction.CommitAsync();
 
-                return new ResponseDto<PartidaEntity>
+                // Mapear `PartidaEntity` a `PartidaDto`
+                var partidaDto = _mapper.Map<PartidaDto>(partidaEntity);
+
+                // Devolvemos la respuesta exitosa con PartidaDto
+                return new ResponseDto<PartidaDto>
                 {
                     StatusCode = 201,
                     Status = true,
                     Message = "Partida y detalles creados correctamente.",
-                    Data = partidaEntity
+                    Data = partidaDto
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await transaction.RollbackAsync();
-                var innerException = ex.InnerException?.Message ?? "No inner exception.";
-                return new ResponseDto<PartidaEntity>
+
+                return new ResponseDto<PartidaDto>
                 {
                     StatusCode = 500,
                     Status = false,
-                    Message = $"Error: {ex.Message}. Inner Exception: {innerException}",
+                    Message = "Error al crear la partida",
                     Data = null,
                 };
             }
@@ -97,19 +109,34 @@ namespace PartidasContables.Services
 
 
 
-
-        public async Task<ResponseDto<List<PartidaDto>>> ListPartidaAsync(PartidaDto partidaDto)
+        public async Task<ResponseDto<List<PartidaDto>>> ListPartidaAsync()
         {
-            var partidaEntity = await _context.Partidas.ToListAsync(); ;
+            var partidasEntity = await _context.Partidas
+        .Include(p => p.Detalles) // Incluye los detalles de cada partida
+        .ToListAsync();
 
-            var librosDtos = _mapper.Map<List<PartidaDto>>(partidaEntity);
+            // Verificar si no hay partidas en la base de datos
+            if (partidasEntity == null || !partidasEntity.Any())
+            {
+                return new ResponseDto<List<PartidaDto>>
+                {
+                    StatusCode = 404,
+                    Status = false,
+                    Message = "No se encontraron partidas.",
+                    Data = null,
+                };
+            }
 
+            // Mapear la lista de entidades a una lista de DTOs
+            var partidasDto = _mapper.Map<List<PartidaDto>>(partidasEntity);
+
+            // Devolver la lista de partidas en el DTO de respuesta
             return new ResponseDto<List<PartidaDto>>
             {
                 StatusCode = 200,
                 Status = true,
-                Message = "Lista de partidas obtenida correctamente.",
-                Data = librosDtos
+                Message = "Partidas obtenidas correctamente.",
+                Data = partidasDto,
             };
         }
     }

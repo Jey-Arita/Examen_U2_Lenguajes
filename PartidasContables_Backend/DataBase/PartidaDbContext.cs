@@ -24,9 +24,9 @@ namespace PartidasContables.DataBase
                 .OnDelete(DeleteBehavior.NoAction); // Evita cascada en eliminación
 
             modelBuilder.Entity<DetallePartidaEntity>()
-        .HasOne(d => d.Partida) // Relación con PartidaEntity
-        .WithMany(p => p.Detalles) // Si una Partida tiene muchos Detalles
-        .HasForeignKey(d => d.IdPartida);
+            .HasOne(d => d.Partida) // Relación con PartidaEntity
+            .WithMany(p => p.Detalles) // Si una Partida tiene muchos Detalles
+            .HasForeignKey(d => d.IdPartida);
 
             // Configuración para la clave compuesta en SaldoEntity
             modelBuilder.Entity<SaldoEntity>()

@@ -24,12 +24,5 @@ namespace PartidasContables.DataBase.Entities
 
         [ForeignKey("IdPartida")]
         public virtual PartidaEntity Partida { get; set; }
-        public Guid? IdCatalogo { get; set; }
-
-        [ForeignKey("IdCatalogo")]
-        public virtual CatalogoCuentaEntity Catalogo { get; set; }
-
-        [Column(TypeName = "nvarchar(max)")]
-        public string Detalles { get; set; }
     }
 }

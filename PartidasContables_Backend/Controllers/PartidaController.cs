@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PartidasContables.Constants;
 using PartidasContables.DataBase.Entities;
 using PartidasContables.Dtos.Common;
 using PartidasContables.Dtos.Partida;
@@ -21,15 +22,14 @@ namespace PartidasContables.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<ResponseDto<PartidaDto>>> PartidaList(PartidaDto partidaDto)
+        public async Task<ActionResult<ResponseDto<PartidaDto>>> PartidaList()
         {
-            var response = await _partidaService.ListPartidaAsync(partidaDto);
+            var response = await _partidaService.ListPartidaAsync();
             return StatusCode(response.StatusCode, response);
         }
 
         [HttpPost]
-        [AllowAnonymous]
-        //[Authorize(Roles = $"{RolesConstant.ADMIN}")]
+        [Authorize(Roles = $"{RolesConstant.ADMIN}")]
         public async Task<ActionResult<ResponseDto<PartidaEntity>>> Create(PartidaCreateDto partidaCreateDto)
         {
             // Llamamos al servicio para crear la partida
