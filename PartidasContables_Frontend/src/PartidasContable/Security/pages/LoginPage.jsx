@@ -16,7 +16,7 @@ export const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/inicio");
+      navigate("/menu/inicio");
     }
   }, [isAuthenticated, navigate]);
 

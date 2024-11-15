@@ -4,7 +4,7 @@ import { LoginPage } from "../pages";
 export const SecurityRouter = () => {
   return (
           <Routes>
-              <Route path="/" element={<LoginPage />} />
+              <Route path="/*" element={<LoginPage />} />
           </Routes>
   );
 };

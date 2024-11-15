@@ -123,14 +123,14 @@ export const CrearPartidas = () => {
       } else if (detalle.tipoCuenta === "Pasivo") {
         acc.pasivo += detalle.monto;
       } else if (detalle.tipoCuenta === "Capital") {
-        acc.capital += detalle.monto;
+        acc.pasivo += detalle.monto;
       }
       return acc;
     },
-    { activo: 0, pasivo: 0, capital: 0 }
+    { activo: 0, pasivo: 0 }
   );
 
-  const montoFinal = balance.activo - (balance.pasivo + balance.capital);
+  const montoFinal = balance.activo - (balance.pasivo);
 
 
   return (
@@ -238,7 +238,6 @@ export const CrearPartidas = () => {
                 <th className="border p-2">Descripción</th>
                 <th className="border p-2">Activo</th>
                 <th className="border p-2">Pasivo</th>
-                <th className="border p-2">Capital</th>
                 <th className="border p-2">Acciones</th>
               </tr>
             </thead>
@@ -262,14 +261,6 @@ export const CrearPartidas = () => {
                   </td>
                   <td className="border p-2">
                     {detalle.tipoCuenta === "Pasivo"
-                      ? detalle.monto.toLocaleString("es-HN", {
-                          style: "currency",
-                          currency: "HNL",
-                        })
-                      : ""}
-                  </td>
-                  <td className="border p-2">
-                    {detalle.tipoCuenta === "Capital"
                       ? detalle.monto.toLocaleString("es-HN", {
                           style: "currency",
                           currency: "HNL",

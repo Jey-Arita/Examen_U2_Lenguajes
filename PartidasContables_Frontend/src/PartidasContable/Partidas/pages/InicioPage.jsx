@@ -11,12 +11,12 @@ export const InicioPage = () => {
           Selecciona una opción para comenzar
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-          <Link to="/catalogo-cuenta">
+          <Link to="/menu/catalogo-cuenta">
             <button className="w-full h-32 flex flex-col items-center justify-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold rounded-lg shadow-md transition duration-200 transform hover:scale-105">
               <span className="text-lg">Catálogo de Cuentas</span>
             </button>
           </Link>
-          <Link to="/crear-partidas">
+          <Link to="/menu/crear-partidas">
             <button className="w-full h-32 flex flex-col items-center justify-center gap-2 bg-green-100 hover:bg-green-200 text-green-800 font-semibold rounded-lg shadow-md transition duration-200 transform hover:scale-105">
               <span className="text-lg">Crear Partida</span>
             </button>
