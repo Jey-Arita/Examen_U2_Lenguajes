@@ -25,29 +25,29 @@ namespace PartidasContables.Services
 
         public async Task<ResponseDto<PartidaDto>> CrearPartidaAsync(PartidaCreateDto partidaCreateDto)
         {
-            //var idClaim = _httpContextAccessor.HttpContext
-            //   .User.Claims.Where(x => x.Type == "UserId").FirstOrDefault();
+            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims
+        .FirstOrDefault(c => c.Type == "UserId");
 
-            //if (idClaim == null)
-            //{
-            //    // Si no se encuentra el UserId en el token, logueamos o imprimimos un mensaje de error
-            //    Console.WriteLine("No se encontró el UserId en el token.");
-            //    return new ResponseDto<PartidaDto>
-            //    {
-            //        StatusCode = 401,
-            //        Status = false,
-            //        Message = "No se encontró el UserId en el token.",
-            //        Data = null,
-            //    };
-            //}
+            // Verificar si encontramos la reclamación "UserId" en el token
+            if (userIdClaim == null)
+            {
+                _logger.LogWarning("No se encontró el UserId en el token.");
+                return new ResponseDto<PartidaDto>
+                {
+                    StatusCode = 401,
+                    Status = false,
+                    Message = "No se encontró el UserId en el token.",
+                    Data = null,
+                };
+            }
 
-            //// Si se encuentra, mostramos el valor del UserId para depuración
-            //Console.WriteLine($"UserId encontrado en el token: {idClaim.Value}");
+            var userId = userIdClaim.Value;
 
-            //var userId = idClaim.Value;
+            // Verificar el valor del UserId en los logs
+            _logger.LogInformation($"UserId extraído del token: {userId}");
 
-            //// Asegúrate de que IdUsuario sea un Guid si es necesario
-            //partidaCreateDto.IdUsuario = userId;
+            // Asegúrate de que IdUsuario sea un Guid si es necesario
+            partidaCreateDto.IdUsuario = userId;
 
             // Validar que la partida tenga al menos un detalle
             if (partidaCreateDto.Detalles == null || !partidaCreateDto.Detalles.Any())

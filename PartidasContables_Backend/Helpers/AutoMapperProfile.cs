@@ -19,7 +19,9 @@ namespace PartidasContables.Helpers
         {
             // Mapeo de PartidaCreateDto a PartidaEntity
             CreateMap<PartidaCreateDto, PartidaEntity>()
-                .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.Detalles));
+            .ForMember(dest => dest.IdUsuario, opt => opt.MapFrom(src => src.IdUsuario))
+            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => src.Detalles));
+
 
             // Mapeo de DetallePartidaCreateDto a DetallePartidaEntity
             CreateMap<DetallePartidaCreateDto, DetallePartidaEntity>();
