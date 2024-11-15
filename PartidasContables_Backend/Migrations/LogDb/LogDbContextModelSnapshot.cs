@@ -35,9 +35,14 @@ namespace PartidasContables.Migrations.LogDb
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("descripcion");
 
-                    b.Property<Guid>("IdCuentaPadre")
+                    b.Property<Guid?>("IdCuentaPadre")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id_cuenta_padre");
+
+                    b.Property<string>("NumeroCuenta")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("numero_cuenta");
 
                     b.Property<bool>("PermiteMovimiento")
                         .HasColumnType("bit")
@@ -82,6 +87,10 @@ namespace PartidasContables.Migrations.LogDb
                     b.Property<decimal>("Monto")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("monto");
+
+                    b.Property<string>("TipoMovimiento")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("tipo_movimiento");
 
                     b.HasKey("Id");
 
@@ -237,8 +246,7 @@ namespace PartidasContables.Migrations.LogDb
                     b.HasOne("PartidasContables.DataBase.Entities.CatalogoCuentaEntity", "CuentaPadre")
                         .WithMany("CuentasHijas")
                         .HasForeignKey("IdCuentaPadre")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CuentaPadre");
                 });

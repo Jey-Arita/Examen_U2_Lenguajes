@@ -13,16 +13,42 @@ namespace PartidasContables.Services
         private readonly PartidaDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<PartidaEntity> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PartidaService(PartidaDbContext context, IMapper mapper, ILogger<PartidaEntity> logger)
+        public PartidaService(PartidaDbContext context, IMapper mapper, ILogger<PartidaEntity> logger, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
-            this._logger = logger;
+            _logger = logger;
+            this._httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ResponseDto<PartidaDto>> CrearPartidaAsync(PartidaCreateDto partidaCreateDto)
         {
+            //var idClaim = _httpContextAccessor.HttpContext
+            //   .User.Claims.Where(x => x.Type == "UserId").FirstOrDefault();
+
+            //if (idClaim == null)
+            //{
+            //    // Si no se encuentra el UserId en el token, logueamos o imprimimos un mensaje de error
+            //    Console.WriteLine("No se encontró el UserId en el token.");
+            //    return new ResponseDto<PartidaDto>
+            //    {
+            //        StatusCode = 401,
+            //        Status = false,
+            //        Message = "No se encontró el UserId en el token.",
+            //        Data = null,
+            //    };
+            //}
+
+            //// Si se encuentra, mostramos el valor del UserId para depuración
+            //Console.WriteLine($"UserId encontrado en el token: {idClaim.Value}");
+
+            //var userId = idClaim.Value;
+
+            //// Asegúrate de que IdUsuario sea un Guid si es necesario
+            //partidaCreateDto.IdUsuario = userId;
+
             // Validar que la partida tenga al menos un detalle
             if (partidaCreateDto.Detalles == null || !partidaCreateDto.Detalles.Any())
             {

@@ -12,8 +12,8 @@ using PartidasContables.DataBase;
 namespace PartidasContables.Migrations
 {
     [DbContext(typeof(PartidaDbContext))]
-    [Migration("20241113065618_AddNumeroCuenta")]
-    partial class AddNumeroCuenta
+    [Migration("20241115051931_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,7 +173,7 @@ namespace PartidasContables.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("descripcion");
 
-                    b.Property<Guid>("IdCuentaPadre")
+                    b.Property<Guid?>("IdCuentaPadre")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("id_cuenta_padre");
 
@@ -225,6 +225,10 @@ namespace PartidasContables.Migrations
                     b.Property<decimal>("Monto")
                         .HasColumnType("decimal(18,2)")
                         .HasColumnName("monto");
+
+                    b.Property<string>("TipoMovimiento")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("tipo_movimiento");
 
                     b.HasKey("Id");
 
@@ -435,8 +439,7 @@ namespace PartidasContables.Migrations
                     b.HasOne("PartidasContables.DataBase.Entities.CatalogoCuentaEntity", "CuentaPadre")
                         .WithMany("CuentasHijas")
                         .HasForeignKey("IdCuentaPadre")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("CuentaPadre");
                 });

@@ -20,10 +20,11 @@ namespace PartidasContables.Migrations.LogDb
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    numero_cuenta = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     descripcion = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     tipo_cuenta = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     saldo = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    id_cuenta_padre = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    id_cuenta_padre = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     permite_movimiento = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -98,7 +99,8 @@ namespace PartidasContables.Migrations.LogDb
                     id_partida = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     id_catalogo_cuenta = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     descripcion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    monto = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    tipo_movimiento = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

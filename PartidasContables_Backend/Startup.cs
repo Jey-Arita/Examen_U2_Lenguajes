@@ -23,6 +23,7 @@ namespace PartidasContables
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
@@ -31,6 +32,7 @@ namespace PartidasContables
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IPartidaService, PartidaService>();
             services.AddTransient<ICatalogoCuentaService, CatalogoCuentaService>();
+            
 
 
             // Configuración del contexto de Partidas

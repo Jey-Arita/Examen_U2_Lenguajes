@@ -262,14 +262,9 @@ namespace PartidasContables.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("id_usuario");
 
-                    b.Property<Guid?>("PartidaId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("IdUsuario");
-
-                    b.HasIndex("PartidaId");
 
                     b.ToTable("partidas", "dbo");
                 });
@@ -472,12 +467,6 @@ namespace PartidasContables.Migrations
                         .HasForeignKey("IdUsuario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("PartidasContables.DataBase.Entities.PartidaEntity", "Partida")
-                        .WithMany()
-                        .HasForeignKey("PartidaId");
-
-                    b.Navigation("Partida");
 
                     b.Navigation("Usuario");
                 });

@@ -14,10 +14,12 @@ namespace PartidasContables.Controllers
     public class PartidaController : ControllerBase
     {
         private readonly IPartidaService _partidaService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PartidaController(IPartidaService partidaService)
+        public PartidaController(IPartidaService partidaService, IHttpContextAccessor httpContextAccessor)
         {
             _partidaService = partidaService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
