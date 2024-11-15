@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { CatalogoCuenta, CrearPartidas, InicioPage} from "../pages";
+import { CatalogoCuenta, CrearPartidas, InicioPage, LogPages} from "../pages";
 
 export const PartidasContableRouter = () => {
     return (
@@ -8,6 +8,7 @@ export const PartidasContableRouter = () => {
                 <Route path="/catalogo-cuenta" element={<CatalogoCuenta />} />
                 <Route path="/crear-partidas" element={<CrearPartidas/>}/>
                 <Route path="/inicio" element={<InicioPage/>}/>
+                <Route path="/logs" element={<LogPages/>}/>
             </Routes>
           </div>
     

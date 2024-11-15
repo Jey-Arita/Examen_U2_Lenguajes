@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using PartidasContables.DataBase.Entities;
 using PartidasContables.Dtos.CatalogoCuenta;
 using PartidasContables.Dtos.DetallePartida;
 using PartidasContables.Dtos.DetallePartidaDto;
+using PartidasContables.Dtos.LogDatabase;
 using PartidasContables.Dtos.Partida;
 
 namespace PartidasContables.Helpers
@@ -13,6 +15,7 @@ namespace PartidasContables.Helpers
         {
             MapForPartidas();
             MapForCatalogoCuenta();
+            MapLogsDatabase();
         }
 
         private void MapForPartidas()
@@ -40,6 +43,14 @@ namespace PartidasContables.Helpers
             CreateMap<CatalogoCuentaEntity, CatalogoCuentaDto>().ForMember(dest => dest.Saldo, opt => opt.MapFrom(src => src.Saldo));
             CreateMap<CatalogoCuentaCreateDto, CatalogoCuentaEntity>();
             CreateMap<CatalogoCuentaEditDto, CatalogoCuentaEntity>();
+        }
+
+        private void MapLogsDatabase()
+        {
+            CreateMap<LogEntity, LogDatabaseDto>().ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Dictionary<string, object>>(src.Detalles)));
+            CreateMap<LogDatabaseDto, LogDatabaseCreateDto>().ForMember(dest => dest.Fecha, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.Detalles, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Detalles)));
+
         }
     }
 }
