@@ -83,28 +83,31 @@ export const CrearPartidas = () => {
     e.preventDefault();
     setFormError("");
     setSuccess("");
-
+  
+    // Validar formulario
     if (!partida.fecha || !partida.descripcion || partida.detalles.length === 0) {
       setFormError("Todos los campos son requeridos y debe haber al menos un detalle");
       return;
     }
     console.log("Partida a enviar:", partida);
-
+  
     try {
-      const result = await crearPartida(partida);
-      console.log("Respuesta de la API:", result); 
-        
-      if (result.status) {
+      // Llamada a la API para crear partida
+      const response = await crearPartida(partida);
+  
+      // Verificar el resultado de la respuesta
+      if (response?.status === 201) {
         setSuccess("Partida creada exitosamente");
-        setPartida({ fecha: "", descripcion: "", detalles: [] });
+        setPartida({ fecha: "", descripcion: "", detalles: [] }); // Reiniciar formulario
       } else {
-        setFormError(result.message || "Error al crear la partida");
+        setFormError(response?.message || "Error al crear la partida");
       }
     } catch (error) {
-      console.log("Error al crear la partida:", error);
+      console.error("Error al crear la partida:", error);
       setFormError(`Error: ${error.message}`);
     }
   };
+  
 
   const balance = partida.detalles.reduce(
     (acc, detalle) => {
