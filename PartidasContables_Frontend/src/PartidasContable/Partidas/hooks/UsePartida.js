@@ -32,23 +32,29 @@ export const usePartidaGet = () => {
 };
 
 // Crear una nueva partida
-const crearPartida = async (newPartida) => {
-  console.log("Objeto recibido en useCrearPartida:", newPartida);
-  setLoading(true);
-  setError(null);
-  setSuccess(false);
+export const useCrearPartida = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
-  try {
-    const result = await postPartidaAsync(newPartida);
-    if (result.status === 201) {
-      setSuccess(true);
-    } else {
-      setError(result.message || "Error al crear la partida");
+  const crearPartida = async (newPartida) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const result = await postPartidaAsync(newPartida);
+      if (result.status === 201) {
+        setSuccess(true);
+      } else {
+        setError(result.message || "Error al crear la partida");
+      }
+    } catch (err) {
+      setError(err.message || 'Error al crear la partida');
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    setError(err.message || 'Error al crear la partida');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
+  return { crearPartida, loading, error, success };
+};
