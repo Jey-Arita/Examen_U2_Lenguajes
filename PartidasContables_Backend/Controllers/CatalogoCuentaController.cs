@@ -24,7 +24,7 @@ namespace PartidasContables.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = $"{RolesConstant.ADMIN}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ResponseDto<List<CatalogoCuentaDto>>>> CatatalogoListAsync()
         {
             var response = await _service.ListCatalogoCuentaAsync();
