@@ -5,6 +5,7 @@ using PartidasContables.Dtos.Partida;
 using PartidasContables.Dtos.Common;
 using Microsoft.EntityFrameworkCore;
 using PartidasContables.Services.Interface;
+using PartidasContables.Dtos.DetallePartidaDto;
 
 namespace PartidasContables.Services
 {
@@ -25,13 +26,13 @@ namespace PartidasContables.Services
 
         public async Task<ResponseDto<PartidaDto>> CrearPartidaAsync(PartidaCreateDto partidaCreateDto)
         {
+            //Extraemos el Id del usuario para guardarlo en la base de datos
             var userIdClaim = _httpContextAccessor.HttpContext.User.Claims
         .FirstOrDefault(c => c.Type == "UserId");
 
-            // Verificar si encontramos la reclamación "UserId" en el token
+            // Verificaramos si traemos la clain
             if (userIdClaim == null)
             {
-                _logger.LogWarning("No se encontró el UserId en el token.");
                 return new ResponseDto<PartidaDto>
                 {
                     StatusCode = 401,
@@ -43,10 +44,7 @@ namespace PartidasContables.Services
 
             var userId = userIdClaim.Value;
 
-            // Verificar el valor del UserId en los logs
-            _logger.LogInformation($"UserId extraído del token: {userId}");
-
-            // Asegúrate de que IdUsuario sea un Guid si es necesario
+            // Asignamos al DtoPartida el Id del usuario que extragimos antes
             partidaCreateDto.IdUsuario = userId;
 
             // Validar que la partida tenga al menos un detalle
@@ -61,14 +59,14 @@ namespace PartidasContables.Services
                 };
             }
 
-            // Comenzamos la transacción
+            // Comenzamos la transaccion
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Crear la entidad Partida y mapear los detalles
+                // Creamos la partida y meapeamos
                 var partidaEntity = _mapper.Map<PartidaEntity>(partidaCreateDto);
 
-                // Validar y actualizar el saldo en el catálogo de cuentas
+                // Validamos y actualizamos el saldo en el catálogo de cuentas
                 foreach (var detalle in partidaCreateDto.Detalles)
                 {
                     var catalogoCuenta = await _context.CatalogoCuentas
@@ -87,9 +85,9 @@ namespace PartidasContables.Services
                     }
 
                     // Actualizamos el saldo según el tipo de cuenta
-                    if (catalogoCuenta.TipoCuenta == "Activo" || catalogoCuenta.TipoCuenta == "Gasto")
+                    if (catalogoCuenta.TipoCuenta == "Activo" || detalle.TipoMovimiento == "Debe")
                         catalogoCuenta.Saldo += detalle.Monto;
-                    else if (catalogoCuenta.TipoCuenta == "Pasivo" || catalogoCuenta.TipoCuenta == "Ingreso")
+                    else if (catalogoCuenta.TipoCuenta == "Pasivo" || detalle.TipoMovimiento == "Haber")
                         catalogoCuenta.Saldo -= detalle.Monto;
 
                     _context.CatalogoCuentas.Update(catalogoCuenta);
@@ -97,6 +95,8 @@ namespace PartidasContables.Services
 
                 // Asignamos los detalles mapeados a partidaEntity
                 partidaEntity.Detalles = _mapper.Map<List<DetallePartidaEntity>>(partidaCreateDto.Detalles);
+
+
 
                 // Agregamos la entidad de partida al contexto
                 _context.Partidas.Add(partidaEntity);
