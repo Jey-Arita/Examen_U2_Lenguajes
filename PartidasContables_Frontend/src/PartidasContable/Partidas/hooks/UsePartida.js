@@ -32,7 +32,7 @@ export const usePartidaGet = () => {
 };
 
 // Crear una nueva partida
-const crearPartida = async (newPartida) => {
+ const crearPartida = async (newPartida) => {
   console.log("Objeto recibido en useCrearPartida:", newPartida);
   setLoading(true);
   setError(null);
