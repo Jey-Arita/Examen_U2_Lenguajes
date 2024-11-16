@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useCatalogoGet, usePartidaGet } from '../hooks';
 
-
 export const VerPartidasPages = () => {
   const { partidas, isLoading, error, totalPages} = usePartidaGet();
   const { cuentas, isLoading: isLoadingCuentas, error: errorCuentas } = useCatalogoGet();

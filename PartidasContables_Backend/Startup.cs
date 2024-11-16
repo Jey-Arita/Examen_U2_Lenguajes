@@ -104,7 +104,7 @@ namespace PartidasContables
             app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
-
+       
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

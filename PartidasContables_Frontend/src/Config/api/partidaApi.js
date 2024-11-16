@@ -5,11 +5,9 @@ axios.defaults.baseURL = API_URL;
 
 const setAuthToken = () => {
   const auth = getAuth();
-  console.log("Token seteado:", auth.token); 
   if (auth) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${auth.token}`;
   } else {
-    console.log("No hay token en localStorage.");
     delete axios.defaults.headers.common["Authorization"];
   }
 };
