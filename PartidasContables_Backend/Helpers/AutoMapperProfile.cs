@@ -3,7 +3,9 @@ using PartidasContables.DataBase.Entities;
 using PartidasContables.Dtos.CatalogoCuenta;
 using PartidasContables.Dtos.DetallePartida;
 using PartidasContables.Dtos.DetallePartidaDto;
+using PartidasContables.Dtos.LogDatabase;
 using PartidasContables.Dtos.Partida;
+using System.Security.AccessControl;
 
 namespace PartidasContables.Helpers
 {
@@ -13,6 +15,7 @@ namespace PartidasContables.Helpers
         {
             MapForPartidas();
             MapForCatalogoCuenta();
+            MapForLogs();
         }
 
         private void MapForPartidas()
@@ -37,5 +40,10 @@ namespace PartidasContables.Helpers
             CreateMap<CatalogoCuentaCreateDto, CatalogoCuentaEntity>();
             CreateMap<CatalogoCuentaEditDto, CatalogoCuentaEntity>();
         }
+
+        private void MapForLogs()
+        {
+            CreateMap<LogEntity, LogDatabaseDto>().ForMember(dest => dest.IdPartida, opt => opt.MapFrom(src => src.IdPartida));
+        } 
     }
 }

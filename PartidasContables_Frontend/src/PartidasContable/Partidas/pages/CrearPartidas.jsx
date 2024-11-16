@@ -12,8 +12,7 @@ export const CrearPartidas = () => {
   const [partida, setPartida] = useState({
     fecha: "",
     descripcion: "",
-    detalles: [],
-    IdUsuario: "1caa53f1-2d16-4c04-a07d-3e6e9435baa6"
+    detalles: []
   });
 
   const [nuevoDetalle, setNuevoDetalle] = useState({
@@ -99,8 +98,12 @@ export const CrearPartidas = () => {
       if (response?.status === 201) {
         setSuccess("Partida creada exitosamente");
         setPartida({ fecha: "", descripcion: "", detalles: [] }); // Reiniciar formulario
+        setPartida((prev) => ({
+          ...prev,
+          detalles: [],
+        }));
       } else {
-        setFormError(response?.message || "Error al crear la partida");
+        setFormError(response?.message || "Error al crear la partida 2");
       }
     } catch (error) {
       console.error("Error al crear la partida:", error);
