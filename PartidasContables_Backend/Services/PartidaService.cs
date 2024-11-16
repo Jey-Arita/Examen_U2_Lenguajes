@@ -107,10 +107,10 @@ namespace PartidasContables.Services
                 // Confirmamos la transacción
                 await transaction.CommitAsync();
 
-                // Mapear `PartidaEntity` a `PartidaDto`
+                // Mapeamos
                 var partidaDto = _mapper.Map<PartidaDto>(partidaEntity);
 
-                // Devolvemos la respuesta exitosa con PartidaDto
+                // Devolvemos correcto
                 return new ResponseDto<PartidaDto>
                 {
                     StatusCode = 201,
@@ -121,6 +121,7 @@ namespace PartidasContables.Services
             }
             catch (Exception)
             {
+                //Si sale error, devolvemos todo atras para evitar generar datos
                 await transaction.RollbackAsync();
 
                 return new ResponseDto<PartidaDto>
@@ -153,7 +154,7 @@ namespace PartidasContables.Services
                 };
             }
 
-            // Mapear la lista de entidades a una lista de DTOs
+            // Mapear la lista de entidades a una lista de dtos
             var partidasDto = _mapper.Map<List<PartidaDto>>(partidasEntity);
 
             // Devolver la lista de partidas en el DTO de respuesta
