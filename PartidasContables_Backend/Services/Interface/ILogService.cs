@@ -6,5 +6,6 @@ namespace PartidasContables.Services.Interface
     public interface ILogService
     {
         Task RegistrarLogAsync(string accion, string idPartida, string IdCuenta, string Emai);
+        Task<ResponseDto<List<LogDatabaseDto>>> ObtenerLogsAsync();
     }
 }

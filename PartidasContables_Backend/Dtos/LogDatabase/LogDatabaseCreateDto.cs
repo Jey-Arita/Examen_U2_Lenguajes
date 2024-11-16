@@ -9,8 +9,8 @@ namespace PartidasContables.Dtos.LogDatabase
         public string IdUsuario { get; set; }
         [Required]
         public TipoAccion Accion { get; set; }
-        public Guid? IdPartida { get; set; }
-        public Guid? IdCatalogo { get; set; }
+        public string IdPartida { get; set; }
+        public string IdCatalogo { get; set; }
         public Dictionary<string, object> Detalles { get; set; }
     }
 

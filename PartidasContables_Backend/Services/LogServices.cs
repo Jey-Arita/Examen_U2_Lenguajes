@@ -4,6 +4,11 @@ using PartidasContables.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
+using PartidasContables.Dtos.Common;
+using PartidasContables.Dtos.LogDatabase;
+using AutoMapper;
+using PartidasContables.Dtos.CatalogoCuenta;
+using Microsoft.EntityFrameworkCore;
 
 namespace PartidasContables.Services
 {
@@ -11,11 +16,27 @@ namespace PartidasContables.Services
     {
         private readonly LogDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
-        public LogService(LogDbContext context, IHttpContextAccessor httpContextAccessor)
+        public LogService(LogDbContext context, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            this._mapper = mapper;
+        }
+
+        public async Task<ResponseDto<List<LogDatabaseDto>>> ObtenerLogsAsync()
+        {
+            var entities = await _context.Logs.ToListAsync();
+            var dtos = _mapper.Map<List<LogDatabaseDto>>(entities);
+
+            return new ResponseDto<List<LogDatabaseDto>>
+            {
+                StatusCode = 200,
+                Status = true,
+                Message = "Listado de cuentas obtenido exitosamente",
+                Data = dtos
+            };
         }
 
         public async Task RegistrarLogAsync(string accion, string idPartida, string IdCuenta,string Emai)
