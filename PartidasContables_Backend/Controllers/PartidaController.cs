@@ -26,11 +26,11 @@ namespace PartidasContables.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize(Roles = $"{RolesConstant.ADMIN}")]
         public async Task<ActionResult<ResponseDto<PartidaDto>>> PartidaList()
         {
             var response = await _partidaService.ListPartidaAsync();
-            await _logService.RegistrarLogAsync("Ver Partidas", "");
+            await _logService.RegistrarLogAsync("Ver Partida", "N/A", "N/A", "N/A");
             return StatusCode(response.StatusCode, response);
         }
 
@@ -42,9 +42,7 @@ namespace PartidasContables.Controllers
             var response = await _partidaService.CrearPartidaAsync(partidaCreateDto);
 
             // Registrar el log de la acción de creación
-           await _logService.RegistrarLogAsync("Crear Partida", response.Data.Id.ToString());
-
-            // Devolvemos la respuesta con el código de estado correspondiente
+           await _logService.RegistrarLogAsync("Crear Partida", response.Data.Id.ToString(), "N/A", "N/A");
             return StatusCode(response.StatusCode, response);
         }
     }

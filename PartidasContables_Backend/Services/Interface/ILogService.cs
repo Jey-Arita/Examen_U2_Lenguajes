@@ -5,6 +5,6 @@ namespace PartidasContables.Services.Interface
 {
     public interface ILogService
     {
-        Task RegistrarLogAsync(string accion, string idPartida = null);
+        Task RegistrarLogAsync(string accion, string idPartida, string IdCuenta, string Emai);
     }
 }

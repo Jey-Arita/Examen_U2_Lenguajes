@@ -27,6 +27,7 @@ namespace PartidasContables.Controllers.AuthController
         public async Task<ActionResult<ResponseDto<LoginResponseDto>>> Login(LoginDto dto)
         {
             var response = await _authService.LoginAsync(dto);
+            //await _logService.RegistrarLogAsync("Inicio de Sesion", null, "N/A", response.Data.Email);
             return StatusCode(response.StatusCode, response);
         }
 

@@ -23,6 +23,8 @@ namespace PartidasContables.DataBase.Entities
         public string IdPartida { get; set; } // Permite nulos si es opcional
         [Column("id_cuenta")]
         public string IdCuenta { get; set; } // Permite nulos si es opcional
+        [Column("email")]
+        public string Email { get; set; }
 
     }
 }

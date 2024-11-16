@@ -18,7 +18,7 @@ namespace PartidasContables.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task RegistrarLogAsync(string accion, string idPartida = null)
+        public async Task RegistrarLogAsync(string accion, string idPartida, string IdCuenta,string Emai)
         {
             // Obtener el IdUsuario desde el token
             var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
@@ -30,10 +30,12 @@ namespace PartidasContables.Services
             // Crear un nuevo objeto de log
             var log = new LogEntity
             {
-                Fecha = DateTime.UtcNow,
+                Fecha = DateTime.Now,
                 IdUsuario = userId,
                 Accion = accion,
                 IdPartida = idPartida.ToString(),
+                IdCuenta = IdCuenta,
+                Email = Emai,
             };
 
             // Agregar el log al DbContext
